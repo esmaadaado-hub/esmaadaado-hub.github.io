@@ -1,0 +1,777 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Paylaşım Masası</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=Inter:wght@400;500;600;700;800&family=Caveat:wght@500;700&family=DM+Mono:wght@400&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* Layout: portfolyo sitesiyle aynı dil — 12 sütunlu ızgara, 48px üst çubuk, kırmızı numaralı bölümler;
+   solda ayarlar (1–7), sağda yapışkan telefon önizlemesi (8–12). Tek görünümlü açık tasarım. */
+:root{
+  color-scheme:light;
+  --paper:#f4f2ee; --ink:#1d1c1a; --red:#a3201b;
+  --muted:#8a8884; --line:#d6d4d0; --faint:rgba(29,28,26,.05);
+  --font:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --gx:clamp(16px,3vw,40px); --gap:clamp(12px,2vw,24px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(56px + env(safe-area-inset-top, 0px))}
+body{background:var(--paper);color:var(--ink);font-family:var(--font);font-weight:400;font-size:14px;line-height:1.55;letter-spacing:-.003em;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:20;background:var(--paper)}
+::selection{background:var(--red);color:var(--paper)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);
+  padding-left:max(var(--gx), env(safe-area-inset-left, 0px));padding-right:max(var(--gx), env(safe-area-inset-right, 0px))}
+
+/* arka plan çizim ızgarası */
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-grid i{display:block;height:100%;border-left:1px solid var(--faint)}
+.bg-grid i:last-child{border-right:1px solid var(--faint)}
+.bg-grid i:nth-child(4){border-left-color:rgba(163,32,27,.18)}
+.bar,.hero,.work,.foot{position:relative;z-index:1}
+
+/* üst çubuk */
+.bar{position:sticky;top:env(safe-area-inset-top, 0px);z-index:10;background:var(--paper);border-bottom:1px solid var(--line);height:48px;align-items:center;font-size:12.5px}
+.bar .who{grid-column:1/4;font-weight:500}
+.bar nav{grid-column:4/10;display:flex;gap:clamp(14px,2.4vw,32px)}
+.bar nav a{color:var(--muted);text-decoration:none;transition:color .2s}
+.bar nav a:hover{color:var(--ink)}
+.bar nav a span{color:var(--red);margin-right:6px}
+.tabs{display:flex;gap:2px;align-items:center}
+.bar .tabs{grid-column:10/13;justify-self:end}
+.tabs button{font:inherit;font-size:12.5px;background:none;border:0;cursor:pointer;color:var(--muted);padding:4px 6px}
+.tabs button[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:4px;text-decoration-thickness:1.5px}
+.tabs button:hover{color:var(--ink)}
+
+/* giriş */
+.hero{padding-top:clamp(40px,6vw,88px);padding-bottom:clamp(32px,4vw,56px);row-gap:20px}
+.hero h1{grid-column:1/10;font-weight:300;font-size:clamp(3rem,8vw,7.5rem);line-height:.86;letter-spacing:-.055em;margin:0 0 0 -.05em}
+.hero h1 i{font-style:normal;color:var(--red)}
+.hero .sub{grid-column:1/7;font-weight:300;font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.4;max-width:34ch;margin:0}
+.hero .meta{grid-column:7/13;align-self:end;justify-self:end;text-align:right;font-size:12.5px;color:var(--muted);margin:0}
+
+/* çalışma alanı */
+.work{align-items:start;padding-bottom:clamp(72px,10vw,140px)}
+.controls{grid-column:1/8;min-width:0}
+.preview-col{grid-column:8/13;position:sticky;top:calc(48px + 24px + env(safe-area-inset-top, 0px));display:flex;flex-direction:column;gap:14px;align-items:center;min-width:0}
+
+.sec{border-top:1px solid var(--ink);padding-top:14px;padding-bottom:clamp(40px,5vw,64px);display:grid;grid-template-columns:minmax(0,2fr) minmax(0,5fr);column-gap:var(--gap)}
+.sec-h{font-size:12.5px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.sec-h b{font-weight:400;display:flex;gap:10px}
+.sec-h b span{color:var(--red)}
+.sec-body{position:relative;display:flex;flex-direction:column;gap:18px;min-width:0}
+.sec-body::before{content:"";position:absolute;left:0;top:-15px;width:56px;height:3px;background:var(--red)}
+.sub-label{font-size:12.5px;color:var(--muted)}
+.row{display:flex;gap:var(--gap);flex-wrap:wrap}
+.row > *{flex:1 1 150px;min-width:0}
+
+label.f{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--muted)}
+label.f small{color:var(--muted);opacity:.85}
+input[type=text],textarea{font:inherit;font-size:15px;font-weight:300;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:8px 0;width:100%}
+input[type=text]:focus,textarea:focus{outline:none;border-bottom-color:var(--red)}
+textarea{resize:vertical;min-height:56px;line-height:1.45}
+button:focus-visible,.tpl:focus-visible{outline:1.5px solid var(--red);outline-offset:3px}
+input[type=range]{width:100%;accent-color:var(--red)}
+.color{display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer}
+.color input{width:22px;height:22px;border:1px solid var(--line);border-radius:50%;padding:0;background:none;cursor:pointer;overflow:hidden}
+.color input::-webkit-color-swatch-wrapper{padding:0}.color input::-webkit-color-swatch{border:0;border-radius:50%}
+.color input::-moz-color-swatch{border:0;border-radius:50%}
+
+.tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:24px var(--gap)}
+.tpl{border:0;background:none;padding:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:8px}
+.tpl .thumb{overflow:hidden;position:relative;background:var(--line);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.tpl .thumb > div{position:absolute;left:0;top:0;transform-origin:0 0}
+.tpl:hover .thumb{transform:translateY(-2px)}
+.tpl .cap{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:12.5px;line-height:1.3}
+.tpl .cap .no{color:var(--red)}
+.tpl[aria-pressed="true"] .thumb{box-shadow:0 0 0 2px var(--red)}
+.tpl[aria-pressed="true"] .cap span:last-child{font-weight:500}
+
+.link{font:inherit;font-size:12.5px;border:0;background:none;color:var(--ink);padding:0 0 2px;cursor:pointer;border-bottom:1.5px solid var(--red);transition:color .2s}
+.link:hover{color:var(--red)}
+.btn{font:inherit;font-size:13px;border:1px solid var(--ink);border-radius:0;padding:10px 22px;cursor:pointer;background:transparent;color:var(--ink);transition:background .2s,color .2s}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.solid{background:var(--red);border-color:var(--red);color:var(--paper)}
+.btn.solid:hover{background:var(--ink);border-color:var(--ink)}
+.file{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.counter{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;display:flex;gap:18px;flex-wrap:wrap}
+.counter .warn{color:var(--red);font-weight:500}
+
+/* telefon */
+.phone{width:100%;max-width:360px;border:1px solid var(--line);border-radius:36px;padding:8px;background:var(--paper)}
+.screen{border-radius:28px;overflow:hidden;background:#fff;color:#111;position:relative;font-family:var(--font)}
+.fd-head{display:flex;align-items:center;gap:9px;padding:10px 12px}
+.av{width:30px;height:30px;border-radius:50%;background:#ddd center/cover;flex:none}
+.fd-head b{font-size:13px;font-weight:500}
+.fd-head .loc{font-size:11px;color:#555;display:block;line-height:1.1}
+.fd-head .dots{margin-left:auto;font-weight:700;letter-spacing:1px}
+.media{position:relative;width:100%;overflow:hidden;background:#eee}
+.media > .stage-holder{position:absolute;left:0;top:0;transform-origin:0 0}
+#media [data-drag]{cursor:grab;touch-action:none}
+#media [data-drag]:hover{outline:5px dashed rgba(255,255,255,.85);outline-offset:6px}
+#media [data-drag].dragging{cursor:grabbing}
+.fd-actions{display:flex;gap:14px;padding:10px 12px 6px;align-items:center}
+.fd-actions svg{width:23px;height:23px;stroke:#111;fill:none;stroke-width:1.8}
+.fd-actions .sp{margin-left:auto}
+.fd-likes{font-size:13px;font-weight:500;padding:0 12px}
+.fd-cap{font-size:13px;padding:2px 12px 4px;white-space:pre-wrap;word-break:break-word}
+.fd-cap b{font-weight:500}
+.fd-cap .tag{color:#2a4f8f}
+.fd-cap .more{color:#777;cursor:pointer;background:none;border:0;padding:0;font:inherit}
+.fd-time{font-size:10.5px;color:#888;padding:0 12px 14px}
+.story{position:relative;aspect-ratio:9/16;background:#000}
+.story .media{position:absolute;inset:0;height:100%}
+.st-ui{position:absolute;inset:0;pointer-events:none;color:#fff;display:flex;flex-direction:column;justify-content:space-between}
+.st-top{padding:10px 10px 22px;background:linear-gradient(rgb(0 0 0 / .3),transparent)}
+.bars{display:flex;gap:3px}
+.bars i{flex:1;height:2.5px;border-radius:2px;background:rgb(255 255 255 / .4)}
+.bars i.on{background:#fff}
+.st-user{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:13px;font-weight:500;text-shadow:0 1px 2px rgb(0 0 0 / .4)}
+.st-user .av{width:28px;height:28px}
+.st-user .t{font-weight:400;opacity:.8}
+.st-user .x{margin-left:auto;font-size:20px;font-weight:300}
+.st-bot{display:flex;align-items:center;gap:12px;padding:10px 12px 14px;background:linear-gradient(transparent,rgb(0 0 0 / .3))}
+.st-bot .msg{flex:1;border:1.4px solid rgb(255 255 255 / .8);border-radius:22px;padding:8px 14px;font-size:12.5px}
+.st-bot svg{width:23px;height:23px;stroke:#fff;fill:none;stroke-width:1.8}
+.safe{position:absolute;left:0;right:0;background:repeating-linear-gradient(45deg,rgba(163,32,27,.32) 0 6px,rgba(163,32,27,.12) 6px 12px);pointer-events:none}
+.safe span{position:absolute;left:8px;font:500 10px var(--font);color:#fff;background:rgba(0,0,0,.5);padding:2px 6px}
+.safe.t span{bottom:4px}.safe.b span{top:4px}
+.prev-tools{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center}
+.chk{display:inline-flex;gap:7px;align-items:center;font-size:12.5px;cursor:pointer}
+.chk input{accent-color:var(--red);width:14px;height:14px}
+.hint{font-size:12px;color:var(--muted);text-align:center;margin:0;max-width:340px}
+
+/* alt bilgi */
+.foot{border-top:1px solid var(--line);height:48px;align-items:center;font-size:12.5px;color:var(--muted)}
+.foot p{grid-column:1/7;margin:0}
+.foot span{grid-column:7/13;justify-self:end}
+
+/* dışa aktarma */
+.modal{position:fixed;inset:0;background:rgba(29,28,26,.5);display:flex;align-items:center;justify-content:center;z-index:50;
+  padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+.modal .box{background:var(--paper);padding:20px;max-width:480px;width:100%;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:14px;border-top:3px solid var(--red)}
+.modal img{width:100%}
+.modal p{margin:0;color:var(--muted);font-size:13px}
+#offstage{position:fixed;left:-20000px;top:0}
+
+@media (max-width:1000px){
+  .controls{grid-column:1/8}
+  .preview-col{grid-column:8/13}
+  .sec{grid-template-columns:minmax(0,1fr)}
+  .sec-h{margin-bottom:26px;flex-direction:row;justify-content:space-between}
+}
+@media (max-width:760px){
+  .bar nav{display:none}
+  .bar .who{grid-column:1/8}
+  .bar .tabs{grid-column:8/13}
+  .hero h1,.hero .sub,.hero .meta{grid-column:1/13}
+  .hero .meta{justify-self:start;text-align:left}
+  .controls,.preview-col{grid-column:1/13}
+  .preview-col{position:static;order:-1;margin-bottom:40px}
+  .work{display:flex;flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+
+<div class="bg-grid grid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<header class="bar grid">
+  <div class="who">Paylaşım Masası</div>
+  <nav aria-label="Bölümler">
+    <a href="#s-sablon"><span>01</span>Şablon</a>
+    <a href="#s-foto"><span>02</span>Fotoğraf</a>
+    <a href="#s-yazi"><span>03</span>Yazılar</a>
+    <a href="#s-hesap"><span>04</span>Hesap</a>
+  </nav>
+  <div class="tabs" role="group" aria-label="Paylaşım türü">
+    <button id="m-post" data-mode="post" aria-pressed="true">Gönderi</button>
+    <button id="m-story" data-mode="story" aria-pressed="false">Story</button>
+  </div>
+</header>
+
+<section class="hero grid">
+  <h1>Paylaşım Masası<i>.</i></h1>
+  <p class="sub">Gönderini ve story'ni paylaşmadan önce akışta nasıl duracağını gör.</p>
+  <p class="meta">12 şablon · Gönderi 1080×1350 · Story 1080×1920</p>
+</section>
+
+<div class="work grid">
+  <main class="controls">
+    <section class="sec" id="s-sablon">
+      <div class="sec-h"><b><span>01</span>Şablon</b></div>
+      <div class="sec-body">
+        <div class="tpls" id="tpls"></div>
+        <div id="ratio-sec" style="display:flex;flex-direction:column;gap:6px">
+          <span class="sub-label">Oran</span>
+          <div class="tabs" role="group" aria-label="Oran" style="margin-left:-6px">
+            <button id="r-45" data-ratio="4:5" aria-pressed="true">4:5</button>
+            <button id="r-11" data-ratio="1:1" aria-pressed="false">1:1</button>
+            <button id="r-34" data-ratio="3:4" aria-pressed="false">3:4</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="s-foto">
+      <div class="sec-h"><b><span>02</span>Fotoğraf</b><span class="sub-label" id="img-name">Örnek görsel</span></div>
+      <div class="sec-body">
+        <div class="file">
+          <input type="file" id="img" accept="image/*" hidden>
+          <button class="btn" id="img-btn" type="button">Fotoğraf seç</button>
+        </div>
+        <div class="row">
+          <label class="f">Yakınlaştır <input type="range" id="zoom" min="100" max="250" value="100"></label>
+          <label class="f">Yatay odak <input type="range" id="px" min="0" max="100" value="50"></label>
+          <label class="f">Dikey odak <input type="range" id="py" min="0" max="100" value="50"></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="s-yazi">
+      <div class="sec-h"><b><span>03</span>Yazılar</b><button class="link" id="reset-pos" type="button">Konumları sıfırla</button></div>
+      <div class="sec-body">
+        <div id="fields" style="display:flex;flex-direction:column;gap:18px"></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span class="sub-label">Renkler</span>
+          <div class="row" id="colors" style="gap:24px"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="s-hesap">
+      <div class="sec-h"><b><span>04</span>Hesap</b></div>
+      <div class="sec-body">
+        <div class="row">
+          <label class="f">Kullanıcı adı <input type="text" id="user"></label>
+          <label class="f">Konum <input type="text" id="loc"></label>
+        </div>
+        <div class="file">
+          <input type="file" id="av" accept="image/*" hidden>
+          <button class="link" id="av-btn" type="button">Profil fotoğrafı seç</button>
+        </div>
+        <label class="f" id="cap-wrap">Gönderi açıklaması <textarea id="caption" rows="5"></textarea></label>
+        <div class="counter" id="counter"></div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="preview-col">
+    <div class="phone"><div class="screen" id="screen"></div></div>
+    <div class="prev-tools">
+      <label class="chk" id="safe-wrap" hidden><input type="checkbox" id="safe" checked> Güvenli alan</label>
+      <button class="btn solid" id="export" type="button">PNG olarak al</button>
+    </div>
+    <p class="hint" id="hint"></p>
+  </aside>
+</div>
+
+<footer class="foot grid"><p>Paylaşım Masası</p><span>Instagram önizleme aracı</span></footer>
+
+<div id="offstage" aria-hidden="true"></div>
+<div class="modal" id="modal" hidden>
+  <div class="box" role="dialog" aria-label="Dışa aktarılan görsel">
+    <strong id="m-title" style="font-weight:500">Görsel hazır</strong>
+    <img id="m-img" alt="Dışa aktarılan paylaşım görseli">
+    <p>Görsele sağ tıklayıp “Resmi farklı kaydet” ile (telefonda basılı tutarak) kaydedebilirsin.</p>
+    <div><button class="btn" id="m-close" type="button">Kapat</button></div>
+  </div>
+</div>
+
+<script>
+/* ============================ Yardımcılar ============================ */
+const SANS = "'Inter',system-ui,sans-serif", HAND = "'Caveat',cursive", MONO = "'DM Mono',monospace";
+const esc = s => String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const br = s => esc(s).replace(/\n/g, "<br>");
+const rich = (s, emStyle) => esc(s).replace(/\*(.+?)\*/g, `<span style="${emStyle}">$1</span>`).replace(/\n/g, "<br>");
+const lines = s => String(s || "").split("\n").map(x => x.trim()).filter(Boolean);
+const hexA = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
+const ic = (d, color, size = 44, fill = false, sw = 2.2) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill ? color : "none"}" stroke="${fill ? "none" : color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+const P = {
+  chev: "M15 5l-7 7 7 7", undo: "M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3", share: "M12 3v12M7 8l5-5 5 5M5 12v8h14v-8",
+  check: "M5 12.5l4.5 4.5L19 7.5", pin: "M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z",
+  mark: "M6 3h12v18l-6-5-6 5z", more: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM7.5 12h.01M12 12h.01M16.5 12h.01",
+  arrow: "M3 2l7 18 2.5-7.5L20 10z"
+};
+
+/* =====================================================================
+   ŞABLONLAR
+   Her şablon: id, name, fields (formda görünen yazı alanları ve varsayılanları),
+   colors (renk alanları), photo (arka planda tam fotoğraf olsun mu),
+   render(d, W, H, s) → HTML. W×H gerçek piksel; s = {t, b} story güvenli boşluğu.
+   d.D(anahtar, konumCSS, içerik) sürüklenebilir bir öğe oluşturur.
+   ===================================================================== */
+const TEMPLATES = [
+  {
+    id: "liste", name: "Yapılacaklar",
+    fields: {
+      eyebrow: { label: "Üst not", def: "şehirde koşturmaca!" },
+      title: { label: "Liste başlığı", def: "Yapılacaklar" },
+      body: { label: "Maddeler", hint: "Her satır bir madde, başına * koyduğun işaretli olur", def: "*Marka çekimi\n*Spor\nFaturaları gönder\nMaillere dön\nYemek yap\nVlog paylaş", multi: 6 }
+    },
+    colors: { bg: ["Kart", "#ffffff"], fg: ["Yazı", "#1c1c1e"], ac: ["Tik", "#e0a516"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, top = s.t + A * .2;
+      const circ = p => `<span style="width:92px;height:92px;border-radius:50%;background:#f1f1f3;display:inline-flex;align-items:center;justify-content:center">${ic(p, d.fg)}</span>`;
+      const items = lines(d.raw.body).map(it => {
+        const on = it.startsWith("*"), t = esc(it.replace(/^\*\s*/, ""));
+        const box = on ? `<span style="width:48px;height:48px;border-radius:50%;background:${d.ac};display:inline-flex;align-items:center;justify-content:center;flex:none">${ic(P.check, "#fff", 34, false, 3)}</span>`
+                       : `<span style="width:46px;height:46px;border-radius:50%;border:3px solid #c3c3c7;flex:none;box-sizing:border-box"></span>`;
+        return `<div style="display:flex;align-items:center;gap:22px;font-size:44px;line-height:1.1;padding:13px 0">${box}<span>${t}</span></div>`;
+      }).join("");
+      return d.D("not", `left:180px;top:${top - 92}px`, `<div style="font:400 44px ${MONO};color:#fff;text-decoration:underline;text-underline-offset:8px;text-shadow:0 2px 8px rgba(0,0,0,.35);white-space:nowrap">${d.eyebrow}</div>`) +
+        d.D("kart", `left:150px;top:${top}px`, `<div style="width:580px;background:${d.bg};border-radius:64px;padding:36px 40px 48px;color:${d.fg};font-family:${SANS};box-shadow:0 20px 50px rgba(0,0,0,.15)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:34px">${circ(P.chev)}<div style="display:flex;gap:18px">${circ(P.undo)}${circ(P.share)}</div></div>
+          <div style="font-size:66px;font-weight:700;letter-spacing:-.02em;margin-bottom:18px">${d.title}</div>${items}</div>`);
+    }
+  },
+  {
+    id: "kelimeler", name: "Büyük kelimeler",
+    fields: {
+      title: { label: "Kelimeler", hint: "Her kelime ayrı yerleşir", def: "bir\ngünüm\nnasıl\ngeçiyor", multi: 3 },
+      eyebrow: { label: "Konum etiketi", def: "İstanbul" },
+      footer: { label: "İkinci etiket", def: "içerik üreticisi" }
+    },
+    colors: { fg: ["Kelimeler", "#fbfcc4"], bg: ["Etiket", "#ffffff"], ac: ["Etiket yazısı", "#1c1c1e"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, words = d.raw.title.split(/\s+/).filter(Boolean);
+      const longest = Math.max(1, ...words.map(w => [...w].length));
+      const size = Math.min(240, Math.floor(900 / (longest * .58)));
+      const n = words.length, aligns = ["left", "right", "center"];
+      let out = "";
+      [1, 2].forEach(i => {
+        out += `<div style="position:absolute;top:0;bottom:0;left:${W * i / 3}px;width:3px;background:rgba(255,255,255,.55)"></div>`;
+        out += `<div style="position:absolute;left:0;right:0;top:${H * i / 3}px;height:3px;background:rgba(255,255,255,.55)"></div>`;
+      });
+      words.forEach((w, i) => {
+        const f = n === 1 ? .45 : .12 + .66 * i / (n - 1), top = s.t + A * f - size * .5, al = aligns[i % 3];
+        const pos = al === "left" ? "left:120px" : al === "right" ? "right:90px" : "left:0;right:0;text-align:center";
+        out += d.D("k" + i, `${pos};top:${top}px`, `<span style="display:inline-block;font:800 ${size}px/1 ${SANS};letter-spacing:-.045em;color:${d.fg};white-space:nowrap">${esc(w)}</span>`);
+      });
+      const pill = (p, t) => `<div style="display:inline-flex;align-items:center;gap:12px;background:${d.bg};color:${d.ac};font:500 44px ${SANS};padding:18px 40px 20px 28px;border-radius:60px;white-space:nowrap">${ic(p, d.ac, 46, true)}${t}</div>`;
+      if (d.eyebrow) out += d.D("konum", `left:90px;top:${s.t + A * .34}px`, pill(P.pin, d.eyebrow));
+      if (d.footer) out += d.D("etiket", `right:110px;top:${s.t + A * .55}px`, pill(P.mark, d.footer));
+      out += d.D("zoom", `left:${W / 2 - 254}px;top:${H - s.b - 190}px`, `<div style="display:flex;gap:24px;padding:16px 26px;border-radius:70px;background:rgba(255,255,255,.3)">${[".5", "1x", "2", "5"].map(z => `<span style="width:96px;height:96px;border-radius:50%;background:${z === "1x" ? "rgba(30,30,30,.75)" : "rgba(110,110,110,.55)"};color:#fff;display:inline-flex;align-items:center;justify-content:center;font:600 34px ${SANS}">${z}</span>`).join("")}</div>`);
+      return out;
+    }
+  },
+  {
+    id: "kapak", name: "Kapak yazısı",
+    fields: {
+      title: { label: "Başlık", hint: "*yıldız* içindeki kelime el yazısı olur", def: "beş içerik\n*fikri*", multi: 2 },
+      body: { label: "Alt yazı", def: "NE PAYLAŞACAĞINI BİLMEDİĞİN GÜNLER İÇİN" }
+    },
+    colors: { fg: ["Yazı", "#ffffff"], ac: ["El yazısı", "#ffffff"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b;
+      return `<div style="position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,0) 30%,rgba(0,0,0,.28) 60%,rgba(0,0,0,.1))"></div>` +
+        d.D("baslik", `left:50px;right:50px;top:${s.t + A * .42}px;text-align:center`,
+          `<div style="font:800 132px/0.95 ${SANS};letter-spacing:-.035em;color:${d.fg}">${rich(d.raw.title, `font:700 200px/0.7 ${HAND};letter-spacing:0;color:${d.ac};display:inline-block;transform:rotate(-4deg)`)}</div>
+           <div style="margin-top:38px;font:600 30px ${SANS};letter-spacing:.14em;color:${d.fg}">${d.body}</div>`) +
+        d.D("hesap", `left:0;right:0;top:${H - s.b - 90}px;text-align:center`, `<span style="font:500 26px ${SANS};color:${d.fg};opacity:.75">@${d.user}</span>`);
+    }
+  },
+  {
+    id: "polaroid", name: "Polaroid", photo: false,
+    fields: {
+      title: { label: "Başlık", def: "Benimle\ntanış", multi: 2 },
+      eyebrow: { label: "El yazısı not", def: "merhaba, ben elif" },
+      body: { label: "Alt yazı", def: "Sosyal medyayı birlikte kolaylaştıralım.\nKöşeme hoş geldin!", multi: 2 }
+    },
+    colors: { bg: ["Zemin", "#a9c0d6"], fg: ["Başlık", "#7a2131"], ac: ["Alt yazılar", "#ffffff"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, ph = Math.round(Math.min(520, A * .33));
+      return `<div style="position:absolute;inset:0;background:${d.bg}"></div>` +
+        d.D("baslik", `left:90px;top:${s.t + A * .06}px`, `<div style="font:800 150px/0.9 ${SANS};letter-spacing:-.045em;color:${d.fg}">${d.title}</div>`) +
+        d.D("foto", `left:${W / 2 - 310}px;top:${s.t + A * .35}px`, `<div style="transform:rotate(-5deg);background:#fff;padding:28px 28px 90px;box-shadow:0 18px 40px rgba(0,0,0,.22)"><div style="position:relative;width:564px;height:${ph}px;overflow:hidden">${d.img}</div></div>`) +
+        d.D("not", `left:0;right:0;top:${s.t + A * .35 + ph + 150}px;text-align:center`, `<div style="font:500 84px/1 ${HAND};color:${d.ac}">${d.eyebrow}</div><div style="margin-top:14px;font:400 32px/1.35 ${SANS};color:${d.ac}">${d.body}</div>`);
+    }
+  },
+  {
+    id: "takvim", name: "Takvim sayfası", photo: false,
+    fields: {
+      eyebrow: { label: "Hesap adı", def: "@KENDI.HESABIN" },
+      body: { label: "Kısa yazı", def: "Tam zamanlı iş sahibi,\nyarı zamanlı\niçerik üreticisi", multi: 3 },
+      title: { label: "Büyük başlık", def: "ağustosta\nneler\nyaptım", multi: 3 },
+      footer: { label: "Gün numaraları", hint: "Virgülle 4 tane", def: "17, 18, 24, 25" }
+    },
+    colors: { bg: ["Zemin", "#f6ec9e"], fg: ["Yazı", "#6b3a1f"], ac: ["Çizgiler", "#3a3a32"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, u = Math.min(1, A / 1350), cell = Math.round(600 * u), cx = W / 2, cy = s.t + A * .5;
+      const c0 = 1500 - cell / 2, off = ((c0 % cell) + cell) % cell, line = hexA(d.ac, .7);
+      const nums = d.raw.footer.split(",").map(x => x.trim());
+      const np = [[c0 - 150 * u, c0 + 26 * u], [c0 + cell - 150 * u, c0 + 18 * u], [c0 - 150 * u, c0 + cell + 30 * u], [c0 + cell - 150 * u, c0 + cell + 30 * u]];
+      const stripes = `repeating-linear-gradient(to right, rgba(255,255,255,.22) 0 ${cell / 8}px, rgba(255,255,255,0) ${cell / 8}px ${cell / 4}px)`;
+      return `<div style="position:absolute;inset:0;background:${d.bg}"></div>
+        <div style="position:absolute;left:${cx - 1500}px;top:${cy - 1500}px;width:3000px;height:3000px;transform:rotate(-4deg);
+          background-image:linear-gradient(to right, ${line} 2px, rgba(0,0,0,0) 2px),linear-gradient(to bottom, ${line} 2px, rgba(0,0,0,0) 2px),${stripes};
+          background-size:${cell}px ${cell}px,${cell}px ${cell}px,auto;background-position:${off}px ${off}px,${off}px ${off}px,0 0">
+          <div style="position:absolute;left:${c0}px;top:${c0 + cell * .15}px;width:${cell}px;height:${cell * .85}px;overflow:hidden">${d.img}</div>
+          ${nums.slice(0, 4).map((n, i) => `<div style="position:absolute;left:${np[i][0]}px;top:${np[i][1]}px;font:400 ${64 * u}px ${SANS};color:${d.fg}">(${esc(n)})</div>`).join("")}
+        </div>` +
+        d.D("hesap", `left:0;right:0;top:${s.t + 44 * u}px;text-align:center`, `<span style="font:700 ${34 * u}px ${SANS};color:${d.fg};letter-spacing:.02em">${d.eyebrow}</span>`) +
+        d.D("yazi", `left:${150 * u + 30}px;top:${cy - cell / 2 - 250 * u}px`, `<div style="transform:rotate(-4deg);transform-origin:0 0;font:500 ${50 * u}px/1.02 ${SANS};letter-spacing:-.035em;color:${d.fg}">${d.body}</div>`) +
+        d.D("baslik", `right:110px;top:${cy + cell / 2 + 60 * u}px;text-align:right`, `<div style="transform:rotate(-4deg);transform-origin:100% 0;font:500 ${110 * u}px/0.85 ${SANS};letter-spacing:-.05em;color:${d.fg}">${d.title}</div>`);
+    }
+  },
+  {
+    id: "mesaj", name: "Mesaj balonu",
+    fields: {
+      eyebrow: { label: "Küçük etiket", def: "03. mesaj" },
+      title: { label: "Mesaj", def: "kahve molası" },
+      footer: { label: "Tepki", hint: "Emoji, boş bırakılabilir", def: "❤️" }
+    },
+    colors: { bg: ["Balon", "#ececec"], fg: ["Yazı", "#111111"], ac: ["Etiket", "#f1e27a"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b;
+      return d.D("balon", `left:150px;top:${s.t + A * .36}px`, `<div style="font:400 50px ${SANS};color:${d.ac};margin:0 0 16px 22px;text-shadow:0 1px 4px rgba(0,0,0,.3);white-space:nowrap">${d.eyebrow}</div>
+        <div style="position:relative;display:inline-block;background:${d.bg};color:${d.fg};font:400 64px/1 ${SANS};padding:28px 62px 32px;border-radius:60px;white-space:nowrap">${d.title}
+          <span style="position:absolute;right:-6px;bottom:-2px;width:46px;height:46px;background:${d.bg};border-bottom-left-radius:40px;border-top-right-radius:6px"></span>
+          ${d.footer ? `<span style="position:absolute;right:26px;top:-44px;font-size:40px;line-height:1;background:#fff;border-radius:30px;padding:8px 12px">${d.footer}</span>` : ""}
+        </div>`);
+    }
+  },
+  {
+    id: "album", name: "Albüm penceresi",
+    fields: {
+      eyebrow: { label: "Küçük etiket", def: "04. albüm adı" },
+      title: { label: "Pencere başlığı", def: "Albümü Yeniden Adlandır" },
+      body: { label: "Kutudaki yazı", def: "sabah yürüyüşü" },
+      footer: { label: "Butonlar", hint: "| ile ayır", def: "Vazgeç|Kaydet" }
+    },
+    colors: { bg: ["Pencere", "#f2f2f2"], fg: ["Yazı", "#111111"], ac: ["Etiket", "#f1e27a"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, left = (W - 720) / 2, top = s.t + A * .42, [b0 = "", b1 = ""] = d.raw.footer.split("|").map(esc);
+      return d.D("etiket", `left:${left + 34}px;top:${top - 82}px`, `<div style="font:400 52px ${SANS};color:${d.ac};text-shadow:0 1px 4px rgba(0,0,0,.3);white-space:nowrap">${d.eyebrow}</div>`) +
+        d.D("pencere", `left:${left}px;top:${top}px`, `<div style="width:720px;background:${hexA(d.bg, .95)};border-radius:36px;overflow:hidden;font-family:${SANS};color:${d.fg};box-shadow:0 10px 40px rgba(0,0,0,.18)">
+          <div style="text-align:center;font-size:42px;font-weight:600;padding:40px 30px 28px">${d.title}</div>
+          <div style="margin:0 34px 36px;background:#fff;border-radius:16px;padding:16px 22px;font-size:42px;display:flex;align-items:center;justify-content:space-between"><span>${d.body}</span><span style="width:40px;height:40px;border-radius:50%;background:#b4b4b8;color:#fff;font-size:30px;line-height:38px;text-align:center">×</span></div>
+          <div style="display:flex;border-top:2px solid #c6c6c8"><div style="flex:1;text-align:center;padding:26px;font-size:44px;color:#0a84ff">${b0}</div><div style="width:2px;background:#c6c6c8"></div><div style="flex:1;text-align:center;padding:26px;font-size:44px;color:#0a84ff;font-weight:600">${b1}</div></div>
+        </div>`);
+    }
+  },
+  {
+    id: "etiket", name: "Kağıt etiket",
+    fields: {
+      eyebrow: { label: "Küçük etiket", def: "05. kağıt etiket" },
+      title: { label: "Etiket yazısı", hint: "El yazısıyla görünür", def: "alışveriş\ngünü", multi: 2 }
+    },
+    colors: { bg: ["Kağıt", "#c9a47c"], fg: ["Yazı", "#2b2018"], ac: ["Etiket", "#f1e27a"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, top = s.t + A * .3;
+      return d.D("ust", `left:180px;top:${top - 90}px`, `<div style="font:400 52px ${SANS};color:${d.ac};text-shadow:0 1px 4px rgba(0,0,0,.3);white-space:nowrap">${d.eyebrow}</div>`) +
+        d.D("etiket", `left:200px;top:${top}px`, `<div style="position:relative;width:640px;height:300px;transform:rotate(-3deg)">
+          <svg style="position:absolute;left:-150px;top:70px" width="230" height="160" viewBox="0 0 230 160"><path d="M220 80 C160 50, 90 40, 10 20 M220 80 C150 100, 80 120, 30 150" stroke="#e7d5b4" stroke-width="5" fill="none"/></svg>
+          <div style="position:absolute;left:0;top:44px;width:212px;height:212px;background:${d.bg};transform:rotate(45deg)"></div>
+          <div style="position:absolute;left:106px;top:0;width:534px;height:300px;background:${d.bg};border-radius:0 10px 10px 0"></div>
+          <div style="position:absolute;left:52px;top:132px;width:36px;height:36px;border-radius:50%;background:#f3eee6;border:4px solid ${hexA("#000000", .15)}"></div>
+          <div style="position:absolute;left:170px;top:58px;width:440px;text-align:center;font:500 96px/0.9 ${HAND};color:${d.fg};transform:rotate(-5deg)">${d.title}</div>
+        </div>`);
+    }
+  },
+  {
+    id: "secim", name: "Metin seçimi",
+    fields: {
+      title: { label: "Seçili yazı", hint: "*yıldız* içi kalın olur", def: "İçeriğini *öne çıkaracak* tasarımlar", multi: 2 },
+      body: { label: "Menü", hint: "| ile ayır", def: "Kes|Kopyala|Yapıştır|Bağlantı Ekle" },
+      footer: { label: "Yapışkan not", def: "bu tarafa" },
+      eyebrow: { label: "Sağ üst sayaç", def: "1/6" }
+    },
+    colors: { ac: ["Seçim", "#2f6bff"], bg: ["Not kağıdı", "#cfe0f5"], fg: ["Yazı", "#333333"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, top = s.t + A * .36, menu = d.raw.body.split("|").map(esc);
+      return d.D("secim", `left:150px;top:${top}px`, `<div style="position:relative;width:780px">
+          <div style="position:absolute;left:80px;top:-150px;display:flex;align-items:center;background:#fff;border-radius:22px;box-shadow:0 6px 24px rgba(0,0,0,.16);font:400 38px ${SANS};color:#111;white-space:nowrap">${menu.map((m, i) => `<span style="padding:20px 26px;${i ? "border-left:2px solid #e3e3e6;" : ""}">${m}</span>`).join("")}<span style="padding:20px 22px;border-left:2px solid #e3e3e6">›</span></div>
+          <div style="position:absolute;left:300px;top:-78px">${ic(P.arrow, "#111", 64, false, 1.6).replace('fill="none"', 'fill="#fff"')}</div>
+          <div style="background:${hexA(d.ac, .3)};border-left:5px solid ${d.ac};border-right:5px solid ${d.ac};padding:22px 28px;font:400 80px/1.05 ${SANS};letter-spacing:-.03em;color:${d.fg}">${rich(d.raw.title, "font-weight:700")}</div>
+          <span style="position:absolute;left:-30px;top:-46px;width:62px;height:62px;border-radius:50%;background:${d.ac}"></span>
+          <span style="position:absolute;right:-30px;bottom:-46px;width:62px;height:62px;border-radius:50%;background:${d.ac}"></span>
+        </div>`) +
+        d.D("dusunce", `left:130px;top:${top + 330}px`, `<div style="display:flex;gap:12px;align-items:center;background:#fff;border-radius:50px;padding:24px 34px">${"<i style='width:18px;height:18px;border-radius:50%;background:#9a9aa0;display:inline-block'></i>".repeat(3)}</div>`) +
+        (d.footer ? d.D("not", `right:110px;top:${H - s.b - A * .34}px`, `<div style="position:relative;width:380px;height:380px;background:${d.bg};transform:rotate(-4deg);box-shadow:0 10px 26px rgba(0,0,0,.18)">
+          <div style="position:absolute;left:0;right:0;top:110px;text-align:center;font:500 92px/1 ${HAND};color:#222">${d.footer}</div>
+          <svg style="position:absolute;left:110px;top:220px" width="180" height="90" viewBox="0 0 180 90"><path d="M10 20 C40 80 110 85 160 40 M160 40 L135 42 M160 40 L152 64" stroke="#222" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+          <div style="position:absolute;bottom:20px;left:0;right:0;text-align:center;font:400 20px ${SANS};color:#555">@${d.user}</div></div>`) : "") +
+        (d.eyebrow ? d.D("sayac", `right:40px;top:${s.t + 40}px`, `<div style="background:rgba(50,50,50,.7);color:#fff;font:500 40px ${SANS};padding:12px 30px;border-radius:40px">${d.eyebrow}</div>`) : "");
+    }
+  },
+  {
+    id: "notlar", name: "Not ve mesajlar",
+    fields: {
+      title: { label: "Not yazısı", hint: "Vurgulu görünür", def: "...tükenmeden düzenli paylaşmak istiyorum.", multi: 2 },
+      body: { label: "Mesaj balonları", hint: "İlk satır üstte, ikinci satır altta", def: "VEE... 👀\nSen de böyleysen... 🙃", multi: 2 },
+      footer: { label: "Not başlığı", def: "Notlar" },
+      eyebrow: { label: "Hesap adı", def: "@kendi.hesabin" }
+    },
+    colors: { bg: ["Not kartı", "#fbfaf6"], ac: ["Vurgu", "#d9aa00"], fg: ["Balon", "#1f7aff"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, top = s.t + A * .36, [m1 = "", m2 = ""] = lines(d.raw.body).map(esc);
+      const handle = bottom => `<span style="display:inline-block;position:relative;width:5px;height:66px;background:${d.ac};vertical-align:middle;margin:0 6px"><i style="position:absolute;left:-12px;${bottom ? "bottom" : "top"}:-24px;width:29px;height:29px;border-radius:50%;background:${d.ac}"></i></span>`;
+      const bubble = (t, right) => `<div style="position:relative;display:inline-block;background:${d.fg};color:#fff;font:400 58px/1.1 ${SANS};padding:26px 54px 30px;border-radius:60px;white-space:nowrap">${t}<span style="position:absolute;${right ? "right:-6px;border-bottom-left-radius:40px" : "left:-6px;border-bottom-right-radius:40px"};bottom:-2px;width:46px;height:46px;background:${d.fg}"></span></div>`;
+      return (d.eyebrow ? d.D("hesap", `left:70px;top:${s.t + 60}px`, `<span style="font:400 30px ${SANS};color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3)">${d.eyebrow}</span>`) : "") +
+        (m1 ? d.D("balon1", `left:70px;top:${top - 230}px`, bubble(m1, false)) : "") +
+        d.D("not", `left:70px;top:${top}px`, `<div style="position:relative;width:940px;background:${d.bg};border-radius:24px;border:2px solid rgba(0,0,0,.25);padding:40px 46px 110px;font-family:${SANS};color:#1c1c1e">
+          <div style="display:flex;align-items:center;justify-content:space-between;color:${d.ac};font-size:48px;margin-bottom:56px"><span>‹ ${d.footer}</span><span style="display:flex;gap:40px">${ic(P.share, d.ac, 56, false, 1.8)}${ic(P.more, d.ac, 56, false, 1.8)}</span></div>
+          <div style="font-size:54px;line-height:1.5;letter-spacing:-.01em">${handle(false)}<span style="background:${hexA(d.ac, .38)}">${d.title}</span>${handle(true)}</div>
+          <div style="position:absolute;left:370px;top:-42px;width:210px;height:84px;background:rgba(214,192,146,.85);transform:rotate(-3deg)"></div>
+          <div style="position:absolute;left:390px;bottom:-42px;width:210px;height:84px;background:rgba(214,192,146,.85);transform:rotate(2deg)"></div>
+        </div>`) +
+        (m2 ? d.D("balon2", `right:70px;top:${top + 540}px`, bubble(m2, true)) : "");
+    }
+  },
+  {
+    id: "uyari", name: "Uyarı penceresi",
+    fields: {
+      title: { label: "Başlık", def: "Cesur Fikir" },
+      body: { label: "Metin", def: "Takipçi sayısı 2026'nın\nen zayıf ölçütü.", multi: 2 },
+      footer: { label: "Butonlar", hint: "| ile ayır", def: "Katılıyorum|Katılmıyorum" }
+    },
+    colors: { bg: ["Pencere", "#ffffff"], fg: ["Yazı", "#111111"], ac: ["Sol buton", "#3aa6e8"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b, [b0 = "", b1 = ""] = d.raw.footer.split("|").map(esc);
+      return d.D("pencere", `left:${(W - 640) / 2}px;top:${s.t + A * .14}px`, `<div style="width:640px;background:${d.bg};border-radius:64px;overflow:hidden;font-family:${SANS};color:${d.fg};text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.1)">
+        <div style="padding:56px 50px 50px"><div style="font-size:50px;font-weight:700;margin-bottom:16px">${d.title}</div><div style="font-size:42px;line-height:1.35">${d.body}</div></div>
+        <div style="display:flex;border-top:2.5px solid #6b6b6b"><div style="flex:1;padding:30px 10px;font-size:42px;color:${d.ac}">${b0}</div><div style="width:2.5px;background:#6b6b6b"></div><div style="flex:1;padding:30px 10px;font-size:42px;color:#e0262b">${b1}</div></div></div>`);
+    }
+  },
+  {
+    id: "baloncuk", name: "Etiket baloncukları",
+    fields: {
+      body: { label: "Etiketler", hint: "Her satır bir baloncuk, önizlemede sürükleyerek yerleştir", def: "sosyal hayat\nhediye telaşı\nkahve molası\nyıl sonu işleri\natıştırmalık\nson dakika işleri\ndekor görevi", multi: 7 }
+    },
+    colors: { bg: ["Baloncuk", "#6f6f6f"], fg: ["Yazı", "#ffffff"] },
+    render: (d, W, H, s) => {
+      const A = H - s.t - s.b;
+      const slots = [[.23, .16, "r"], [.58, .27, "l"], [.08, .33, "r"], [.70, .37, "l"], [.42, .42, "r"], [.07, .48, "r"], [.08, .55, "r"], [.66, .52, "l"], [.55, .18, "l"], [.10, .62, "r"]];
+      return lines(d.raw.body).slice(0, 10).map((t, i) => {
+        const [x, y, side] = slots[i];
+        return d.D("b" + i, `left:${W * x}px;top:${s.t + A * y}px`, `<div style="position:relative;background:${d.bg};color:${d.fg};font:400 40px ${SANS};padding:14px 32px 17px;border-radius:40px;white-space:nowrap">${esc(t)}<span style="position:absolute;${side === "r" ? "right:16px" : "left:16px"};bottom:-9px;width:26px;height:26px;background:${d.bg};transform:rotate(45deg)"></span></div>`);
+      }).join("");
+    }
+  }
+];
+
+/* ============================ Durum ============================ */
+const $ = id => document.getElementById(id);
+const state = {
+  mode: "post", ratio: "4:5", tpl: "liste",
+  img: null, av: null, zoom: 100, px: 50, py: 50,
+  user: "kendi.hesabin", loc: "İstanbul",
+  caption: "Bu haftanın küçük listesi 🤍\n\nYarısını bitirdim, yarısı hâlâ bekliyor. Sizin bu hafta listenizde ne var? Yorumlara yazın, belki birbirimize ilham oluruz.\n\n#gününbiri #yapılacaklar #içerikplanı",
+  showSafe: true, capOpen: false, t: {}
+};
+const SIZES = { "1:1": [1080, 1080], "4:5": [1080, 1350], "3:4": [1080, 1440], story: [1080, 1920] };
+const tplById = id => TEMPLATES.find(t => t.id === id) || TEMPLATES[0];
+function T(id = state.tpl){
+  if (!state.t[id]){
+    const tp = tplById(id), o = { off: { post: {}, story: {} } };
+    ["eyebrow", "title", "body", "footer"].forEach(k => o[k] = tp.fields[k] ? tp.fields[k].def : "");
+    Object.entries(tp.colors).forEach(([k, v]) => o[k] = v[1]);
+    state.t[id] = o;
+  }
+  return state.t[id];
+}
+
+function sampleImage(){
+  const c = document.createElement("canvas"); c.width = 1200; c.height = 1600;
+  const g = c.getContext("2d");
+  let gr = g.createLinearGradient(0, 0, 0, 1600);
+  gr.addColorStop(0, "#d9cfbf"); gr.addColorStop(.6, "#c4b8a3"); gr.addColorStop(1, "#8f8571");
+  g.fillStyle = gr; g.fillRect(0, 0, 1200, 1600);
+  g.fillStyle = "rgba(255,255,255,.18)"; g.fillRect(120, 140, 420, 760);
+  g.fillStyle = "rgba(255,255,255,.28)"; g.fillRect(150, 170, 360, 700);
+  g.fillStyle = "#6b7148"; g.beginPath(); g.ellipse(900, 760, 170, 320, -.2, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#56603a"; g.beginPath(); g.ellipse(980, 700, 120, 260, .4, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#b07a55"; g.fillRect(850, 1000, 140, 220);
+  g.fillStyle = "#7b6a55"; g.fillRect(0, 1220, 1200, 380);
+  g.fillStyle = "#5c4f3f"; g.fillRect(300, 1080, 600, 40); g.fillRect(330, 1120, 24, 200); g.fillRect(846, 1120, 24, 200);
+  g.fillStyle = "#f3efe6"; g.fillRect(440, 1030, 70, 50); g.fillStyle = "#e9e1d0"; g.fillRect(560, 990, 120, 90);
+  g.fillStyle = "rgba(255,255,255,.7)"; g.font = "600 26px sans-serif"; g.fillText("ÖRNEK GÖRSEL", 40, 60);
+  return c.toDataURL("image/jpeg", .88);
+}
+const SAMPLE = sampleImage();
+
+function imgLayer(){
+  const src = state.img || SAMPLE;
+  return `<div style="position:absolute;inset:0;overflow:hidden"><div style="position:absolute;inset:0;background:url('${src}') ${state.px}% ${state.py}% / cover no-repeat;transform:scale(${state.zoom / 100});transform-origin:${state.px}% ${state.py}%"></div></div>`;
+}
+const dims = () => state.mode === "story" ? SIZES.story : SIZES[state.ratio];
+const safeFor = mode => mode === "story" ? { t: 250, b: 340 } : { t: 0, b: 0 };
+
+function buildStage(tplId, mode, W, H){
+  const tp = tplById(tplId), td = T(tplId), off = td.off[mode] || (td.off[mode] = {});
+  const D = (key, pos, inner) => { const o = off[key] || { x: 0, y: 0 };
+    return `<div data-drag="${key}" style="position:absolute;${pos};transform:translate(${o.x}px,${o.y}px)">${inner}</div>`; };
+  const img = imgLayer();
+  const d = { img, D, raw: td, eyebrow: esc(td.eyebrow), title: br(td.title), body: br(td.body), footer: esc(td.footer),
+    bg: td.bg || "#ffffff", fg: td.fg || "#111111", ac: td.ac || "#111111", user: esc(state.user) };
+  const el = document.createElement("div");
+  el.style.cssText = `position:relative;width:${W}px;height:${H}px;overflow:hidden;background:#ddd;font-family:${SANS}`;
+  el.innerHTML = (tp.photo === false ? "" : img) + tp.render(d, W, H, safeFor(mode));
+  return el;
+}
+
+/* ============================ Önizleme ============================ */
+const ICON = {
+  heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+  comment: '<svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3.2-6.4A8 8 0 0 1 20 12zm0 0l1 7-5-2"/></svg>',
+  send: '<svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7zM21 3l-11 10"/></svg>',
+  save: '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-5-6 5z"/></svg>'
+};
+function captionHTML(){
+  const raw = state.caption, LIMIT = 125;
+  const fmt = t => esc(t).replace(/(^|\s)([#@][\p{L}\p{N}_.]+)/gu, '$1<span class="tag">$2</span>');
+  if (state.capOpen || (raw.length <= LIMIT && raw.split("\n").length <= 2)) return `<b>${esc(state.user)}</b> ${fmt(raw)}`;
+  let cut = raw.slice(0, LIMIT); const ls = cut.split("\n"); if (ls.length > 2) cut = ls.slice(0, 2).join("\n");
+  return `<b>${esc(state.user)}</b> ${fmt(cut.trimEnd())}… <button class="more" id="more" type="button">devamı</button>`;
+}
+const avStyle = () => state.av ? `background-image:url('${state.av}')` : `background:linear-gradient(135deg,#c9524c,#a3201b)`;
+
+let K = 1;
+function render(){
+  const [W, H] = dims(), scr = $("screen");
+  const holder = document.createElement("div"); holder.className = "stage-holder";
+  holder.appendChild(buildStage(state.tpl, state.mode, W, H));
+  if (state.mode === "post"){
+    scr.innerHTML = `<div class="fd-head"><div class="av" style="${avStyle()}"></div><div><b>${esc(state.user)}</b>${state.loc ? `<span class="loc">${esc(state.loc)}</span>` : ""}</div><span class="dots">···</span></div>
+      <div class="media" id="media"></div>
+      <div class="fd-actions">${ICON.heart}${ICON.comment}${ICON.send}<span class="sp">${ICON.save}</span></div>
+      <div class="fd-likes">1.248 beğenme</div><div class="fd-cap">${captionHTML()}</div><div class="fd-time">2 saat önce</div>`;
+  } else {
+    scr.innerHTML = `<div class="story"><div class="media" id="media"></div><div class="st-ui">
+      <div class="st-top"><div class="bars"><i class="on"></i><i></i><i></i></div><div class="st-user"><div class="av" style="${avStyle()}"></div>${esc(state.user)} <span class="t">2 sa</span><span class="x">×</span></div></div>
+      <div class="st-bot"><div class="msg">Mesaj gönder</div>${ICON.heart}${ICON.send}</div></div></div>`;
+  }
+  const media = $("media");
+  K = media.clientWidth / W;
+  if (state.mode === "post") media.style.height = (H * K) + "px";
+  holder.style.transform = `scale(${K})`;
+  media.appendChild(holder);
+  if (state.mode === "story" && state.showSafe){
+    const s = safeFor("story");
+    media.insertAdjacentHTML("beforeend", `<div class="safe t" style="top:0;height:${s.t * K}px"><span>Profil satırı</span></div><div class="safe b" style="bottom:0;height:${s.b * K}px"><span>Mesaj kutusu</span></div>`);
+  }
+  media.addEventListener("pointerdown", startDrag);
+  const more = $("more"); if (more) more.onclick = () => { state.capOpen = true; render(); };
+
+  const tags = (state.caption.match(/#[\p{L}\p{N}_]+/gu) || []).length, len = [...state.caption].length;
+  $("counter").innerHTML = `<span class="${len > 2200 ? "warn" : ""}">${len.toLocaleString("tr-TR")} / 2.200 karakter</span><span class="${tags > 30 ? "warn" : ""}">${tags} / 30 hashtag</span><span>İlk 125 karakter “devamı”dan önce görünür</span>`;
+  $("hint").textContent = (state.mode === "story"
+    ? "1080×1920 · Taralı alanlara yazı koyma, profil satırı ve mesaj kutusu üstüne biner."
+    : `${W}×${H} · Profil ızgarasında 3:4 kesilerek görünür.`) + " Yazıları önizlemede sürükleyebilirsin.";
+  save();
+}
+
+/* Sürükleme: önizlemedeki öğeyi tut, bırakınca konumu şablona kaydet */
+function startDrag(e){
+  const el = e.target.closest("[data-drag]"); if (!el) return;
+  e.preventDefault();
+  const key = el.dataset.drag, off = T().off[state.mode], base = off[key] || { x: 0, y: 0 };
+  const sx = e.clientX, sy = e.clientY; let x = base.x, y = base.y;
+  el.classList.add("dragging"); el.setPointerCapture(e.pointerId);
+  const move = ev => { x = base.x + (ev.clientX - sx) / K; y = base.y + (ev.clientY - sy) / K; el.style.transform = `translate(${x}px,${y}px)`; };
+  const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up);
+    off[key] = { x: Math.round(x), y: Math.round(y) }; render(); thumbsSoon(); };
+  el.addEventListener("pointermove", move); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+}
+
+function renderThumbs(){
+  const box = $("tpls"); box.innerHTML = "";
+  const [W, H] = dims();
+  TEMPLATES.forEach((t, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "tpl"; b.id = "tpl-" + t.id;
+    b.setAttribute("aria-pressed", String(state.tpl === t.id));
+    b.innerHTML = `<div class="thumb" style="aspect-ratio:${W}/${H}"></div><div class="cap"><span class="no">${String(i + 1).padStart(2, "0")}</span><span>${t.name}</span></div>`;
+    box.appendChild(b);
+    const th = b.querySelector(".thumb"), inner = document.createElement("div");
+    inner.appendChild(buildStage(t.id, state.mode, W, H)); th.appendChild(inner);
+    requestAnimationFrame(() => { inner.style.transform = `scale(${th.clientWidth / W})`; });
+    b.onclick = () => { state.tpl = t.id; renderFields(); renderThumbs(); render(); };
+  });
+}
+let thumbTimer; const thumbsSoon = () => { clearTimeout(thumbTimer); thumbTimer = setTimeout(renderThumbs, 250); };
+
+/* Şablona göre değişen yazı ve renk alanları */
+function renderFields(){
+  const tp = tplById(state.tpl), td = T();
+  const fBox = $("fields"); fBox.innerHTML = "";
+  ["eyebrow", "title", "body", "footer"].filter(k => tp.fields[k]).sort((a, b) => Object.keys(tp.fields).indexOf(a) - Object.keys(tp.fields).indexOf(b)).forEach(k => {
+    const f = tp.fields[k], lab = document.createElement("label");
+    lab.className = "f";
+    lab.innerHTML = `${f.label}${f.hint ? ` <small>${f.hint}</small>` : ""}` + (f.multi ? `<textarea id="f-${k}" rows="${Math.min(f.multi, 7)}"></textarea>` : `<input type="text" id="f-${k}">`);
+    fBox.appendChild(lab);
+    const inp = lab.querySelector("input,textarea"); inp.value = td[k];
+    inp.addEventListener("input", () => { td[k] = inp.value; render(); thumbsSoon(); });
+  });
+  const cBox = $("colors"); cBox.innerHTML = "";
+  Object.entries(tp.colors).forEach(([k, [label]]) => {
+    const lab = document.createElement("label"); lab.className = "color";
+    lab.innerHTML = `<input type="color" id="c-${k}"> ${label}`;
+    cBox.appendChild(lab);
+    const inp = lab.querySelector("input"); inp.value = td[k];
+    inp.addEventListener("input", () => { td[k] = inp.value; render(); thumbsSoon(); });
+  });
+}
+
+/* ============================ Taslak kaydı ============================ */
+const KEY = "paylasim-masasi-v2";
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify({ ...state, capOpen: false })); }
+  catch (e){ try { localStorage.setItem(KEY, JSON.stringify({ ...state, img: null, av: null, capOpen: false })); } catch (_){} }
+}
+function load(){ try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) Object.assign(state, s); } catch (e){} if (!TEMPLATES.some(t => t.id === state.tpl)) state.tpl = TEMPLATES[0].id; }
+load();
+
+/* ============================ Kontroller ============================ */
+function syncInputs(){
+  ["user", "loc", "caption"].forEach(f => $(f).value = state[f]);
+  ["zoom", "px", "py"].forEach(r => $(r).value = state[r]);
+  $("safe").checked = state.showSafe;
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
+  document.querySelectorAll("[data-ratio]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.ratio === state.ratio)));
+  $("ratio-sec").hidden = state.mode === "story";
+  $("safe-wrap").hidden = state.mode !== "story";
+  $("cap-wrap").hidden = $("counter").hidden = state.mode === "story";
+  $("img-name").textContent = state.img ? "Kendi fotoğrafın" : "Örnek görsel";
+}
+["user", "loc", "caption"].forEach(f => $(f).addEventListener("input", e => { state[f] = e.target.value; if (f === "caption") state.capOpen = false; render(); if (f === "user") thumbsSoon(); }));
+["zoom", "px", "py"].forEach(r => $(r).addEventListener("input", e => { state[r] = +e.target.value; render(); thumbsSoon(); }));
+$("safe").addEventListener("change", e => { state.showSafe = e.target.checked; render(); });
+document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { state.mode = b.dataset.mode; syncInputs(); renderThumbs(); render(); });
+document.querySelectorAll("[data-ratio]").forEach(b => b.onclick = () => { state.ratio = b.dataset.ratio; syncInputs(); renderThumbs(); render(); });
+$("reset-pos").onclick = () => { T().off[state.mode] = {}; render(); thumbsSoon(); };
+
+function readFile(input, cb){
+  input.addEventListener("change", () => { const f = input.files[0]; if (!f) return;
+    const r = new FileReader(); r.onload = () => cb(r.result, f.name); r.readAsDataURL(f); input.value = ""; });
+}
+$("img-btn").onclick = () => $("img").click();
+$("av-btn").onclick = () => $("av").click();
+readFile($("img"), (url, name) => { state.img = url; state.zoom = 100; state.px = 50; state.py = 50; syncInputs(); $("img-name").textContent = name; render(); renderThumbs(); });
+readFile($("av"), url => { state.av = url; render(); });
+
+/* ============================ PNG ============================ */
+$("export").onclick = async () => {
+  const btn = $("export"); btn.disabled = true; btn.textContent = "Hazırlanıyor…";
+  try {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    const [W, H] = dims(), off = $("offstage"); off.innerHTML = "";
+    const stage = buildStage(state.tpl, state.mode, W, H); off.appendChild(stage);
+    const canvas = await html2canvas(stage, { width: W, height: H, scale: 1, backgroundColor: null, useCORS: true, logging: false });
+    off.innerHTML = "";
+    const url = canvas.toDataURL("image/png");
+    $("m-img").src = url; $("m-title").textContent = `Görsel hazır · ${W}×${H}`; $("modal").hidden = false;
+  } catch (e){ $("hint").textContent = "Görsel oluşturulamadı. Sayfayı yenileyip tekrar dene."; }
+  finally { btn.disabled = false; btn.textContent = "PNG olarak al"; }
+};
+$("m-close").onclick = () => $("modal").hidden = true;
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") $("modal").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("modal").hidden = true; });
+
+syncInputs(); renderFields(); renderThumbs(); render();
+let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { render(); renderThumbs(); }, 120); });
+if (document.fonts) document.fonts.ready.then(() => { render(); renderThumbs(); });
+</script>
+
+</body></html>

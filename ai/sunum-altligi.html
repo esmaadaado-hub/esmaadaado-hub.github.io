@@ -1,0 +1,1667 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sunum Altlığı</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter+Tight:wght@200;300;400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Portfolyo ile aynı dil: kâğıt zemin, mürekkep, bordo vurgu, Inter Tight, ince çizgiler. Tek (açık) görünüm. */
+:root {
+  --paper: #f4f2ee; --ink: #1d1c1a; --red: #a3201b;
+  --muted: #84837f; --line: #d2d0cc; --soft: #ebe8e3;
+  --font: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --gx: clamp(16px, 2.4vw, 32px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 13.5px/1.5 var(--font); letter-spacing: -0.003em; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--red); color: var(--paper); }
+button, input, textarea, select { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 1.5px solid var(--red); outline-offset: 2px; }
+#app { height: 100%; display: flex; flex-direction: column; }
+.gut { padding-left: max(var(--gx), env(safe-area-inset-left, 0px)); padding-right: max(var(--gx), env(safe-area-inset-right, 0px)); }
+
+/* Üst çubuk */
+.bar { flex: none; height: 48px; display: flex; align-items: center; gap: 20px; border-bottom: 1px solid var(--line); font-size: 12.5px; background: var(--paper); position: relative; z-index: 5; }
+.bar .who { font-weight: 500; white-space: nowrap; }
+.bar .mid { flex: 1; min-width: 0; display: flex; gap: 14px; align-items: baseline; overflow: hidden; }
+.bar .mid .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .st { color: var(--muted); white-space: nowrap; }
+.bar .st.err { color: var(--red); }
+.bar .acts { display: flex; gap: 18px; align-items: center; }
+.btn { background: none; border: 0; padding: 6px 0; cursor: pointer; color: var(--ink); white-space: nowrap; transition: color .2s; }
+.btn:hover { color: var(--red); }
+.btn:disabled { color: var(--line); cursor: default; }
+.btn.m { color: var(--muted); }
+.btn.m:hover { color: var(--red); }
+.btn.u { text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+.btn .r { color: var(--red); margin-right: 6px; }
+.menu-w { position: relative; }
+.menu { position: absolute; right: 0; top: 36px; background: var(--paper); border: 1px solid var(--ink); z-index: 20; display: grid; grid-template-columns: 1fr 1fr; min-width: 340px; }
+.menu[hidden] { display: none; }
+.mcol { padding: 10px 0 8px; display: grid; align-content: start; }
+.mcol + .mcol { border-left: 1px solid var(--line); }
+.mh { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 0 14px 6px; }
+.menu button { display: flex; justify-content: space-between; gap: 16px; width: 100%; text-align: left; background: none; border: 0; padding: 9px 14px; cursor: pointer; }
+.menu button:hover { color: var(--red); }
+.menu small { color: var(--muted); }
+
+/* Ana sayfa */
+.home { flex: 1; overflow: auto; }
+.home-in { padding-block: clamp(28px, 5vw, 64px) 96px; }
+.hero { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(12px, 2vw, 24px); align-items: end; row-gap: 24px; margin-bottom: clamp(40px, 6vw, 80px); }
+.hero h1 { grid-column: 1 / 9; margin: 0; font-family: var(--display); font-weight: 300; font-size: clamp(3rem, 9vw, 8.5rem); line-height: .88; letter-spacing: .02em; text-transform: uppercase; }
+.hero h1 i { font-style: normal; color: var(--red); }
+.hero p { grid-column: 9 / 13; margin: 0; color: var(--muted); max-width: 38ch; font-size: 14px; }
+.sec { border-top: 1px solid var(--ink); padding-top: 14px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(12px, 2vw, 24px); }
+.sec-head { grid-column: 1 / 4; font-size: 12.5px; display: flex; gap: 10px; }
+.sec-head span { color: var(--red); }
+.sec-body { grid-column: 4 / 13; min-width: 0; position: relative; }
+.sec-body::before { content: ""; position: absolute; left: 0; top: -15px; width: 56px; height: 3px; background: var(--red); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 44px 24px; padding-top: 28px; }
+.card .thumb { display: block; width: 100%; padding: 0; background: none; cursor: pointer; border: 1px solid var(--line); transition: border-color .2s; }
+.card .thumb:hover { border-color: var(--ink); }
+.cap { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding-top: 12px; align-items: baseline; }
+.cap .no { color: var(--red); font-size: 12.5px; }
+.cap h3 { margin: 0; font-weight: 500; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cap .y { color: var(--muted); font-size: 12.5px; }
+.card .meta { color: var(--muted); font-size: 12.5px; padding-left: calc(2ch + 10px); }
+.card .cact { display: flex; gap: 18px; padding-left: calc(2ch + 10px); font-size: 12.5px; }
+.newcard { display: grid; place-items: center; aspect-ratio: 16 / 9; border: 1px dashed var(--muted); background: none; cursor: pointer; width: 100%; font-family: var(--display); font-weight: 400; font-size: 24px; letter-spacing: .14em; text-transform: uppercase; transition: color .2s, border-color .2s; }
+.newcard:hover { color: var(--red); border-color: var(--red); }
+.newform { grid-column: 4 / 13; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 24px; padding: 28px 0 8px; }
+.newform .full { grid-column: 1 / -1; }
+.f label, .lbl { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.f input, .f textarea, .f select { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 7px 0; font-size: 14px; border-radius: 0; }
+.f textarea { resize: vertical; min-height: 92px; line-height: 1.55; border: 1px solid var(--line); padding: 8px 10px; }
+.f input:focus, .f textarea:focus, .f select:focus { outline: none; border-color: var(--red); }
+.radios { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.radios label { display: flex; gap: 8px; align-items: center; color: var(--ink); font-size: 13.5px; cursor: pointer; }
+.radios input { accent-color: var(--red); width: auto; }
+.empty-note { color: var(--muted); padding-top: 28px; max-width: 52ch; }
+
+/* Düzenleyici */
+.ed { flex: 1; min-height: 0; display: grid; grid-template-columns: 210px minmax(0, 1fr) 330px; }
+.ed-list { border-right: 1px solid var(--line); overflow: auto; padding: 16px 16px 40px; }
+.ed-list .lh { display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 14px; }
+.ed-list .lh span { color: var(--red); }
+.li { display: block; width: 100%; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; margin-bottom: 16px; }
+.li .mini { border: 1px solid var(--line); }
+.li.on .mini { border-color: var(--ink); outline: 1px solid var(--ink); }
+.li .lc { display: flex; gap: 8px; font-size: 12px; padding-top: 6px; }
+.li .lc b { font-weight: 400; color: var(--red); }
+.li .lc span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.li-ops { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; margin: -8px 0 18px; }
+.addlist { display: grid; gap: 2px; font-size: 12.5px; margin-top: 6px; }
+.addlist button { text-align: left; background: none; border: 0; padding: 5px 0; cursor: pointer; border-top: 1px solid var(--line); }
+.addlist button:hover { color: var(--red); }
+.stage { overflow: auto; display: grid; place-items: center; padding: 28px; container-type: size; }
+.stage-in { width: min(100cqw - 56px, (100cqh - 76px) * var(--r)); }
+.hint { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; }
+.hint b { font-weight: 400; color: var(--ink); }
+.ed-panel { border-left: 1px solid var(--line); overflow: auto; padding: 0 20px 60px; }
+.tabs { display: flex; gap: 22px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--paper); z-index: 2; height: 44px; align-items: center; font-size: 12.5px; }
+.tabs button { background: none; border: 0; padding: 0; cursor: pointer; color: var(--muted); }
+.tabs button.on { color: var(--ink); text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 6px; text-decoration-thickness: 1.5px; }
+.grp { padding-top: 22px; display: grid; gap: 16px; }
+.grp > h4 { margin: 0; font-weight: 400; font-size: 12px; color: var(--muted); border-top: 1px solid var(--ink); padding-top: 10px; display: flex; justify-content: space-between; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tpls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 8px; }
+.tpl { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font-size: 11px; color: var(--muted); }
+.tpl .tm { border: 1px solid var(--line); display: block; }
+.tpl:hover { color: var(--ink); }
+.tpl.on { color: var(--ink); }
+.tpl.on .tm { border-color: var(--red); outline: 1px solid var(--red); }
+.slotrow { display: grid; grid-template-columns: 14px 64px minmax(0, 1fr); gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); align-items: start; }
+.slotrow.sel { background: linear-gradient(90deg, rgba(163,32,27,.06), transparent); }
+.slotrow .sl { color: var(--red); font-size: 12px; padding-top: 2px; }
+.slotrow .sth { aspect-ratio: 4 / 3; background: var(--soft); overflow: hidden; display: grid; place-items: center; color: var(--muted); font-size: 18px; font-weight: 300; cursor: pointer; border: 0; padding: 0; }
+.slotrow .sth img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.slotrow input, .slotrow textarea { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 4px 0; font-size: 13px; border-radius: 0; }
+.slotrow textarea { resize: vertical; min-height: 48px; font-size: 12.5px; }
+.slotrow input:focus, .slotrow textarea:focus { outline: none; border-color: var(--red); }
+.sbtns { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; margin-top: 4px; }
+.steprow { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); }
+.steprow .row2 input { width: 100%; }
+.sw { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.sw label { display: grid; gap: 2px; justify-items: center; font-size: 10.5px; color: var(--muted); }
+.sw input[type=color] { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; padding: 0; background: none; cursor: pointer; }
+.sw input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+.sw input[type=color]::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.themes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.theme { background: none; border: 1px solid var(--line); padding: 6px; cursor: pointer; font-size: 11.5px; text-align: left; display: grid; gap: 6px; }
+.theme i { display: flex; height: 22px; }
+.theme i b { flex: 1; }
+.theme.on { border-color: var(--red); outline: 1px solid var(--red); }
+.chk { display: flex; gap: 8px; align-items: center; cursor: pointer; font-size: 13px; }
+.chk input { accent-color: var(--red); }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+
+/* Pafta görünümü (SVG + etkileşim katmanı) */
+.sh { position: relative; container-type: inline-size; line-height: 0; }
+.sh svg { display: block; width: 100%; height: auto; }
+.hit { position: absolute; line-height: 1.2; cursor: pointer; }
+.hit.empty { border: 1px dashed rgba(29,28,26,.35); display: grid; place-items: center; text-align: center; color: rgba(29,28,26,.55); font-size: max(10px, 1.05cqw); }
+.hit.empty.top { place-items: start; padding: 1.6cqw; text-align: left; }
+.hit.empty.top > div { display: flex; gap: 8px; align-items: baseline; background: rgba(244,242,238,.85); padding: 6px 10px; }
+.hit.empty span { display: block; font-size: max(16px, 2.6cqw); font-weight: 300; line-height: 1; }
+.hit.empty:hover, .hit.drop { border: 1.5px dashed var(--red); color: var(--red); background: rgba(163,32,27,.05); }
+.hit.full:hover { outline: 1px solid rgba(163,32,27,.6); }
+.hit.sel { outline: 2px solid var(--red); }
+.hit.pan { cursor: grab; }
+.hit.pan:active { cursor: grabbing; }
+.hit.busy { background: rgba(244,242,238,.75); display: grid; place-items: center; font-size: 12px; color: var(--ink); border: 0; }
+.tools { position: absolute; right: 6px; top: 6px; display: none; gap: 1px; line-height: 1; }
+.hit.full:hover .tools, .hit.sel .tools { display: flex; }
+.tools button { background: var(--paper); border: 0; padding: 6px 9px; font-size: 11.5px; cursor: pointer; }
+.tools button:hover { color: var(--red); }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--paper); padding: 10px 16px; font-size: 13px; z-index: 50; max-width: calc(100% - 32px); }
+.loading { flex: 1; display: grid; place-items: center; color: var(--muted); }
+
+@media (max-width: 1000px) {
+  .ed { display: block; overflow: auto; }
+  .ed-list { border-right: 0; border-bottom: 1px solid var(--line); display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; }
+  .ed-list .lh, .li-ops, .addw { flex: none; }
+  .li { flex: none; width: 140px; margin: 0; }
+  .ed-list .side { flex: none; width: 150px; }
+  .stage { container-type: normal; padding: 16px; display: block; }
+  .stage-in { width: 100%; }
+  .ed-panel { border-left: 0; border-top: 1px solid var(--line); }
+  .hero h1, .hero p, .sec-head, .sec-body, .newform { grid-column: 1 / 13; }
+  .sec-head { margin-bottom: 8px; }
+  .bar .hide-s { display: none; }
+}
+@media (max-width: 560px) { .newform { grid-template-columns: 1fr; } .bar { gap: 12px; } .bar .acts { gap: 12px; } }
+/* Plan boya */
+#pp[hidden] { display: none; }
+#pp { position: fixed; inset: 0; z-index: 40; background: var(--paper); display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pp-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 230px minmax(0, 1fr) 320px; }
+.pp-tools, .pp-leg { overflow: auto; padding: 0 18px 40px; }
+.pp-tools { border-right: 1px solid var(--line); }
+.pp-leg { border-left: 1px solid var(--line); }
+.pp-view { position: relative; overflow: hidden; background: var(--soft); touch-action: none; cursor: crosshair; }
+.pp-view[data-tool="pan"] { cursor: grab; }
+.pp-view[data-tool="fill"] { cursor: cell; }
+.pp-cv { position: absolute; left: 0; top: 0; transform-origin: 0 0; box-shadow: 0 0 0 1px var(--line); }
+.pp-cv canvas { display: block; }
+.pp-cv #ppov { position: absolute; inset: 0; pointer-events: none; }
+.pp-tools input[type=range] { width: 100%; accent-color: var(--red); }
+.pp-tools .f label b { font-weight: 500; color: var(--ink); }
+.ptools { display: grid; gap: 2px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); }
+.seg button { background: none; border: 0; padding: 8px 4px; cursor: pointer; font-size: 12.5px; }
+.seg button + button { border-left: 1px solid var(--ink); }
+.seg button.on { background: var(--ink); color: var(--paper); }
+.pt { display: flex; justify-content: space-between; background: none; border: 0; border-top: 1px solid var(--line); padding: 8px 0; cursor: pointer; text-align: left; }
+.pt small { color: var(--muted); }
+.pt:hover { color: var(--red); }
+.pt.on { color: var(--red); font-weight: 500; }
+.lgrow { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 9px 0 9px 6px; border-top: 1px solid var(--line); cursor: pointer; border-left: 2px solid transparent; }
+.lgrow.on { border-left-color: var(--red); background: rgba(163,32,27,.05); }
+.lsw { width: 34px; height: 34px; border: 1px solid var(--line); background-size: cover; }
+.lf input:not([type]), .lf input[id^="lg-n"] { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 3px 0; font-size: 13px; }
+.lf input:focus { outline: none; border-color: var(--red); }
+.lctl { display: flex; gap: 8px; align-items: center; margin-top: 5px; font-size: 12px; flex-wrap: wrap; }
+.lctl input[type=color] { width: 26px; height: 22px; border: 1px solid var(--line); padding: 0; background: none; cursor: pointer; }
+.lctl select { border: 0; border-bottom: 1px solid var(--line); background: none; font-size: 12px; padding: 2px 0; }
+.lctl .used { color: var(--red); font-size: 11px; }
+@media (max-width: 1000px) {
+  .pp-body { display: flex; flex-direction: column; overflow: auto; }
+  .pp-view { flex: none; height: 62vh; order: -1; }
+  .pp-tools, .pp-leg { border: 0; border-top: 1px solid var(--line); overflow: visible; }
+}
+.demo-hint { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 11px 18px; font-size: 13px; z-index: 60; white-space: nowrap; transition: opacity .6s, transform .6s; pointer-events: none; }
+.demo-hint b { font-weight: 500; color: #e7b3ae; }
+.demo-hint.off { opacity: 0; transform: translate(-50%, 10px); transition-delay: 3s; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="app"><div class="loading">Yükleniyor…</div></div>
+<input type="file" id="file" accept="image/png,image/jpeg,image/webp,image/gif,image/*" multiple hidden>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(() => {
+"use strict";
+const PORTFOLIO = "../index.html#yapay-zeka";
+const FONT = '"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif';
+const FONT_D = '"Cormorant Garamond",Cormorant,Garamond,"Times New Roman",serif';
+const FMT = {
+  W169: { name: "16:9 ekran", mm: [338.67, 190.5], px: 3840 },
+  R43:  { name: "4:3 ekran",  mm: [297, 222.75], px: 3200 },
+  A4L:  { name: "A4 yatay",   mm: [297, 210], px: 3508 },
+  A3L:  { name: "A3 yatay",   mm: [420, 297], px: 4961 },
+  A1L:  { name: "A1 yatay",   mm: [841, 594], px: 4967 },
+};
+const THEMES = {
+  kagit:  { name: "Kâğıt",  bg: "#f4f2ee", ink: "#1d1c1a", block: "#a3201b", on: "#f4f2ee" },
+  beyaz:  { name: "Beyaz",  bg: "#ffffff", ink: "#1d1c1a", block: "#1d1c1a", on: "#ffffff" },
+  zeytin: { name: "Zeytin", bg: "#e7e3dc", ink: "#2b2a24", block: "#45442f", on: "#efebe4" },
+  kahve:  { name: "Kahve",  bg: "#ebe6e0", ink: "#2a201b", block: "#4e2416", on: "#efe8e1" },
+};
+const AY = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+const today = () => { const d = new Date(); return AY[d.getMonth()] + " " + d.getFullYear(); };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const p2 = n => String(n).padStart(2, "0");
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+const up = s => String(s || "").toLocaleUpperCase("tr");
+const LET = "ABCDEFGHIJKLMNOP";
+function hexmix(a, b, t) {
+  const pa = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16)), pb = [1, 3, 5].map(i => parseInt(b.slice(i, i + 2), 16));
+  return "#" + pa.map((v, i) => Math.round(v * t + pb[i] * (1 - t)).toString(16).padStart(2, "0")).join("");
+}
+function pal(p) {
+  const t = THEMES[p.theme] || THEMES.kagit;
+  return { ...t, muted: hexmix(t.ink, t.bg, .55), faint: hexmix(t.ink, t.bg, .14), line: hexmix(t.ink, t.bg, .3), empty: hexmix(t.ink, t.bg, .07) };
+}
+
+/* ---------------- Ölçüm ve metin kırma ---------------- */
+const mctx = document.createElement("canvas").getContext("2d");
+function setF(ctx, size, weight, ls, scale, fam = FONT) {
+  ctx.font = `${weight} ${size * scale}px ${fam}`;
+  if ("letterSpacing" in ctx) ctx.letterSpacing = (ls * size * scale) + "px";
+}
+function measure(t, size, weight, ls, fam) { setF(mctx, size, weight, ls, 20, fam); return mctx.measureText(t).width / 20; }
+function wrap(text, size, weight, ls, maxW, fam) {
+  const out = [];
+  for (const para of String(text || "").split("\n")) {
+    if (!para.trim()) { out.push(""); continue; }
+    let line = "";
+    for (const w of para.split(/\s+/)) {
+      const t = line ? line + " " + w : w;
+      if (line && measure(t, size, weight, ls, fam) > maxW) { out.push(line); line = w; } else line = t;
+    }
+    out.push(line);
+  }
+  return out;
+}
+function ellipsize(t, size, weight, ls, maxW, fam) {
+  if (measure(t, size, weight, ls, fam) <= maxW) return t;
+  while (t.length > 1 && measure(t + "…", size, weight, ls, fam) > maxW) t = t.slice(0, -1);
+  return t + "…";
+}
+
+/* ---------------- Şablonlar ---------------- */
+const M = 5;
+function newSlot(cap = "", txt = "") { return { img: null, fit: "cover", pos: { x: 50, y: 50 }, cap, txt }; }
+function ensure(s) {
+  const t = TPL[s.tpl] || TPL.iki;
+  if (!Array.isArray(s.slots)) s.slots = [];
+  while (s.slots.length < t.n) s.slots.push(newSlot());
+  if (t.steps && !(s.steps && s.steps.length)) s.steps = defSteps();
+  if (t.colors && !(s.colors && s.colors.length)) s.colors = ["#45442f", "#4e2416", "#efe9dd", "#c9a77c", "#a8501f"];
+  return s;
+}
+function defSteps() {
+  return [
+    { t: "Analiz ve fikir", d: "Ekim 2026", x: "Alan analizleri, program ve ilk kütle denemeleri." },
+    { t: "Ön proje", d: "Kasım 2026", x: "Plan şeması, kesit kararları ve malzeme seçimi." },
+    { t: "Kesin proje", d: "Aralık 2026", x: "Ölçekli çizimler, detaylar ve strüktür çözümü." },
+    { t: "Sunum", d: "Ocak 2027", x: "Renderlar, paftalar ve jüri sunumu." },
+  ];
+}
+
+function T(B, str, x, y, o = {}) {
+  const size = o.size || 1, weight = o.weight || 400, ls = o.ls || 0, lh = o.lh || 1.4;
+  const fam = o.d ? FONT_D : FONT;
+  let s = o.upper ? up(str) : String(str ?? "");
+  if (!s) return 0;
+  let lines = o.w ? wrap(s, size, weight, ls, o.w, fam) : [s];
+  if (o.max && lines.length > o.max) { lines = lines.slice(0, o.max); lines[o.max - 1] = ellipsize(lines[o.max - 1] + " …", size, weight, ls, o.w || 999, fam); }
+  if (o.one && o.w) lines = [ellipsize(lines.join(" "), size, weight, ls, o.w, fam)];
+  if (o.clipH) { const n = Math.max(1, Math.floor((o.clipH - size) / (size * lh)) + 1); if (lines.length > n) lines = lines.slice(0, n); }
+  const h = (lines.length - 1) * size * lh + size;
+  if (o.bottom) y = y - h;
+  B.ops.push({ k: "text", fam, x, y, lines, size, weight, ls, lh, color: o.color || B.P.ink, align: o.align || "left", op: o.op ?? 1 });
+  return h;
+}
+const R = (B, x, y, w, h, fill, o = {}) => B.ops.push({ k: "rect", x, y, w, h, fill, stroke: o.stroke, sw: o.sw, op: o.op ?? 1 });
+function IMG(B, i, x, y, w, h, o = {}) {
+  const s = B.s.slots[i];
+  B.ops.push({ k: "img", i, x, y, w, h, ref: s.img, fit: s.fit, pos: s.pos });
+  B.slots.push({ i, x, y, w, h });
+  let yy = y + h + 1.1;
+  if (o.cap !== false && s.cap) yy += T(B, s.cap, x, yy, { size: .8, weight: 500, w, one: true }) + .7;
+  if (o.txt && s.txt) T(B, s.txt, x, yy, { size: .72, lh: 1.6, w, color: B.P.muted, max: o.txtMax || 5 });
+  return yy;
+}
+function chrome(B, o = {}) {
+  const { s, si, P, Hu, p } = B;
+  if (o.head !== false) T(B, s.title, M, M + 1.2, { d: true, size: 1.75, ls: .12, upper: true, w: 62, one: true, color: o.on ? P.on : P.ink });
+  if (o.head !== false && s.scale) T(B, "Ölçek  " + s.scale, 100 - M, M + 1.25, { size: .72, ls: .12, upper: true, align: "right", color: P.muted });
+  if (o.num !== false) T(B, p2(si + 1), 100 - M + .3, Hu - 2.2, { d: true, size: 7, weight: 300, ls: 0, align: "right", color: P.faint, bottom: true });
+  if (o.foot !== false) T(B, p.title, M, Hu - 2.9, { size: .66, ls: .12, upper: true, color: P.muted, w: 22, one: true });
+  if (o.foot !== false && !o.noLegend) footLegend(B);
+}
+function legendOf(s) {
+  const out = [], seen = new Set();
+  for (const sl of s.slots || []) for (const it of (sl.paint && sl.paint.used) || []) if (!seen.has(it.name)) { seen.add(it.name); out.push(it); }
+  return out;
+}
+function footLegend(B) {
+  const L = legendOf(B.s); if (!L.length) return;
+  let x = 30; const y = B.Hu - 2.9;
+  for (const it of L) {
+    const tw = measure(it.name, .62, 400, .04);
+    if (x + 1.6 + tw > 86) break;
+    R(B, x, y - .05, .9, .9, it.color, { stroke: B.P.line, sw: .04 });
+    T(B, it.name, x + 1.4, y, { size: .62, ls: .04, color: B.P.muted });
+    x += 1.4 + tw + 2;
+  }
+}
+function content(B) { return { x: M, y: M + 5.2, w: 100 - 2 * M, h: B.Hu - 2 * M - 5.2 - 1.8 }; }
+function north(B, x, y, w) { if (B.s.north) B.ops.push({ k: "north", cx: x + w - 3, cy: 0, top: y + 1.2, a: 3 }); }
+function capH(B, i) { return B.s.slots[i].cap ? 2.6 : 0; }
+
+const TPL = {
+  kapak: { name: "Kapak · tam görsel", g: "Kapak", n: 1, f(B) {
+    const { P, Hu, p } = B;
+    IMG(B, 0, 0, 0, 100, Hu, { cap: false });
+    B.ops.push({ k: "grad", x: 0, y: 0, w: 100, h: Hu });
+    const W = "#ffffff";
+    let y = Hu * .34;
+    y += T(B, p.sub, 50, y, { size: 1.15, align: "center", color: W, w: 70, one: true }) + 2.6;
+    y += T(B, p.title, 50, y, { d: true, size: 5.2, weight: 300, ls: .06, upper: true, lh: 1.08, align: "center", color: W, w: 72, max: 3 }) + 3;
+    y += T(B, p.date, 50, y, { d: true, size: 1.6, weight: 400, align: "center", color: W }) + 3.4;
+    T(B, p.author, 50, y, { size: .9, ls: .16, upper: true, align: "center", color: W, op: .85 });
+  }},
+  kapakblok: { name: "Kapak · renk bloğu", g: "Kapak", n: 1, f(B) {
+    const { P, Hu, p } = B;
+    R(B, 0, 0, 44, Hu, P.block);
+    T(B, p.sub, M, M + 1.4, { size: .78, ls: .16, upper: true, color: P.on, w: 34, one: true, op: .8 });
+    const h = T(B, p.title, M, Hu - M - 7, { d: true, size: 4.4, weight: 300, ls: .06, upper: true, lh: 1.04, color: P.on, w: 34, max: 4, bottom: true });
+    R(B, M, Hu - M - 7 - h - 3, 6, .3, P.on);
+    T(B, p.date, M, Hu - M - 3.8, { d: true, size: 1.35, weight: 400, color: P.on });
+    T(B, p.author, M, Hu - M - 1.2, { size: .74, ls: .16, upper: true, color: P.on, op: .75, w: 34, one: true });
+    IMG(B, 0, 44, 0, 56, Hu, { cap: false });
+  }},
+  icindekiler: { name: "İçindekiler", g: "Kapak", n: 2, f(B) {
+    const { P, Hu, p, si } = B;
+    R(B, 0, 0, 46, Hu, P.block);
+    const iw = 17, ih = Hu * .36;
+    for (let k = 0; k < 2; k++) {
+      const x = M + k * (iw + 1.5);
+      IMG(B, k, x, M, iw, ih, { cap: false });
+      T(B, p2(k + 1), x + iw - 1, M + ih - 1, { d: true, size: 2.6, weight: 300, color: "#ffffff", align: "right", bottom: true });
+    }
+    T(B, B.s.title, M, Hu - M, { d: true, size: 4.4, weight: 300, ls: .06, upper: true, lh: 1.04, color: P.on, w: 38, max: 2, bottom: true });
+    const items = p.sheets.map((s, i) => ({ s, i })).filter(o => o.i !== si && !["kapak", "kapakblok", "icindekiler", "tesekkur"].includes(o.s.tpl));
+    const per = Math.max(1, Math.floor((Hu - 2 * M - 4) / 2.3));
+    const cols = items.length > per ? 2 : 1, cw = cols === 2 ? 20 : 40;
+    items.slice(0, per * 2).forEach((o, k) => {
+      const c = Math.floor(k / per), r = k % per, x = 52 + c * (cw + 2), y = M + 3 + r * 2.3;
+      T(B, p2(o.i + 1), x, y, { size: .8, color: P.block });
+      T(B, o.s.title, x + 2.6, y, { size: .8, ls: .1, upper: true, w: cw - 3, one: true });
+    });
+    T(B, "Sayfa", 52, M, { size: .66, ls: .14, upper: true, color: P.muted });
+  }},
+  bolum: { name: "Bölüm ayracı", g: "Kapak", n: 1, big: true, notes: "Bölüm metni", f(B) {
+    const { P, Hu, s } = B;
+    R(B, 0, 0, 50, Hu, P.block);
+    T(B, s.title, M, M + 1.2, { d: true, size: 1.9, ls: .14, upper: true, color: P.on, w: 38, one: true });
+    T(B, s.notes, M, M + 5, { size: .82, lh: 1.7, color: P.on, w: 30, op: .82, clipH: Hu * .5 });
+    T(B, s.big || p2(bolumNo(B)), 50 - 3, Hu - M + 2.6, { d: true, size: 19, weight: 300, ls: -.02, align: "right", color: P.on, bottom: true });
+    IMG(B, 0, 50, 0, 50, Hu, { cap: false });
+  }},
+  metin: { name: "Metin + görsel", g: "Metin", n: 1, notes: "Metin", f(B) {
+    const { P, Hu, s } = B;
+    IMG(B, 0, 0, 0, 40, Hu, { cap: false });
+    T(B, s.title, 45, M + .6, { d: true, size: 7.5, weight: 300, ls: 0, color: P.faint, w: 52, one: true });
+    T(B, s.title, 47, M + 6.6, { d: true, size: 1.8, ls: .12, upper: true, w: 46, one: true });
+    T(B, s.notes, 47, M + 10, { size: .9, lh: 1.75, w: 40, color: P.ink, clipH: Hu - M - 16 });
+    chrome(B, { head: false });
+  }},
+  plan: { name: "Plan + lejant", g: "Plan", n: 2, north: true, scale: true, notes: "Lejant", nt: true, f(B) {
+    chrome(B, { noLegend: true }); const c = content(B), { P, s } = B;
+    const w0 = c.w * .7;
+    IMG(B, 0, c.x, c.y, w0, c.h - capH(B, 0));
+    north(B, c.x, c.y, w0);
+    const rx = c.x + w0 + 3, rw = c.w - w0 - 3;
+    T(B, s.notesTitle || "Lejant", rx, c.y + .4, { size: .7, ls: .14, upper: true, color: P.muted });
+    let ly = c.y + 2.8; const lim = c.y + c.h * .56;
+    for (const it of legendOf(s)) { if (ly + 1.2 > lim) break; R(B, rx, ly, 1.5, 1, it.color, { stroke: P.line, sw: .04 }); T(B, it.name, rx + 2.3, ly + .05, { size: .78, w: rw - 2.3, one: true }); ly += 1.75; }
+    if (ly > c.y + 2.8) ly += .8;
+    T(B, s.notes, rx, ly, { size: .8, lh: 1.85, w: rw, clipH: Math.max(1, lim - ly) });
+    const kh = c.h * .4;
+    IMG(B, 1, rx, c.y + c.h - kh, rw, kh - capH(B, 1));
+  }},
+  plankesit: { name: "Plan + 2 kesit", g: "Plan", n: 3, north: true, scale: true, f(B) {
+    chrome(B); const c = content(B);
+    const w0 = c.w * .58;
+    IMG(B, 0, c.x, c.y, w0, c.h - capH(B, 0));
+    north(B, c.x, c.y, w0);
+    const rx = c.x + w0 + 3, rw = c.w - w0 - 3, hh = (c.h - 3) / 2;
+    IMG(B, 1, rx, c.y, rw, hh - capH(B, 1));
+    IMG(B, 2, rx, c.y + hh + 3, rw, hh - capH(B, 2));
+  }},
+  iki: { name: "İki görsel", g: "Görsel", n: 2, north: true, scale: true, f(B) {
+    chrome(B); const c = content(B), w = (c.w - 2.5) / 2;
+    IMG(B, 0, c.x, c.y, w, c.h - capH(B, 0)); north(B, c.x, c.y, w);
+    IMG(B, 1, c.x + w + 2.5, c.y, w, c.h - capH(B, 1));
+  }},
+  analiz6: { name: "Analiz ızgarası", g: "Analiz", n: 6, f(B) {
+    chrome(B); const c = content(B), g = 2.2, w = (c.w - 2 * g) / 3, ch = (c.h - g) / 2;
+    for (let k = 0; k < 6; k++) { const x = c.x + (k % 3) * (w + g), y = c.y + Math.floor(k / 3) * (ch + g); IMG(B, k, x, y, w, ch - 2.6); }
+  }},
+  analiz4: { name: "Konsept + 4 diyagram", g: "Analiz", n: 4, notes: "Açıklama", f(B) {
+    chrome(B); const c = content(B), { s, P } = B;
+    const lw = c.w * .27;
+    R(B, c.x, c.y, 5, .25, P.block);
+    T(B, s.notes, c.x, c.y + 2.2, { size: .85, lh: 1.75, w: lw, clipH: c.h - 3 });
+    const gx = c.x + lw + 3, gw = c.w - lw - 3, g = 2.2, w = (gw - g) / 2, ch = (c.h - g) / 2;
+    for (let k = 0; k < 4; k++) IMG(B, k, gx + (k % 2) * (w + g), c.y + Math.floor(k / 2) * (ch + g), w, ch - 2.6);
+  }},
+  surec: { name: "Süreç adımları", g: "Analiz", n: 3, stxt: true, f(B) {
+    chrome(B); const c = content(B), { P } = B;
+    const w = c.w * .22, ih = c.h * .44, ys = [c.y + 2, c.y + 4.5, c.y + 7];
+    const xs = [c.x + 1, c.x + c.w / 2 - w / 2, c.x + c.w - w - 1];
+    for (let k = 0; k < 3; k++) {
+      const yb = IMG(B, k, xs[k], ys[k], w, ih, { cap: false });
+      T(B, "Adım " + (k + 1), xs[k], ys[k] + ih + 1.1, { size: .72, weight: 500, color: P.block });
+      const s = B.s.slots[k];
+      let y2 = ys[k] + ih + 3;
+      if (s.cap) y2 += T(B, s.cap, xs[k], y2, { size: .82, weight: 500, w, max: 2 }) + .8;
+      T(B, s.txt, xs[k], y2, { size: .72, lh: 1.6, w, color: P.muted, max: 6 });
+    }
+    for (let k = 0; k < 2; k++) {
+      const x1 = xs[k] + w * .45, y1 = ys[k] - .5, x2 = xs[k + 1] - 1.2, y2 = ys[k + 1] + 2;
+      const mx = (x1 + x2) / 2 + 2, my = Math.min(y1, y2) - 4;
+      arrow(B, x1, y1, mx, my, x2, y2);
+    }
+  }},
+  zaman: { name: "Zaman çizelgesi", g: "Metin", n: 0, steps: true, f(B) {
+    chrome(B); const c = content(B), { P, s } = B;
+    const n = s.steps.length, ly = c.y + c.h * .14, cw = c.w / n;
+    B.ops.push({ k: "line", x1: c.x, y1: ly, x2: c.x + c.w, y2: ly, color: P.ink, sw: .1 });
+    s.steps.forEach((st, k) => {
+      const x = c.x + k * cw + (k === 0 ? 0 : 0) + cw * .08;
+      B.ops.push({ k: "circle", cx: x, cy: ly, r: .55, fill: P.ink });
+      B.ops.push({ k: "line", x1: x, y1: ly, x2: x, y2: ly + 6, color: P.ink, sw: .07 });
+      let y = ly + 8;
+      y += T(B, st.t, x - .4, y, { size: .78, weight: 500, w: cw - 4, max: 2 }) + 1.2;
+      y += T(B, st.d, x - .4, y, { d: true, size: 1.6, weight: 400 }) + 2;
+      T(B, st.x, x - .4, y, { size: .72, lh: 1.65, w: cw - 4, color: P.muted, max: 8 });
+    });
+    B.ops.push({ k: "line", x1: 0, y1: B.Hu - M - 1, x2: 78, y2: B.Hu - M - 1, color: P.line, sw: .08 });
+  }},
+  render: { name: "Tek görsel", g: "Görsel", n: 1, scale: true, north: true, f(B) {
+    chrome(B); const c = content(B);
+    IMG(B, 0, c.x, c.y, c.w, c.h - capH(B, 0)); north(B, c.x, c.y, c.w);
+  }},
+  render3: { name: "Render + 2 detay", g: "Görsel", n: 3, f(B) {
+    chrome(B); const c = content(B), w0 = c.w * .64, rx = c.x + w0 + 2.5, rw = c.w - w0 - 2.5, hh = (c.h - 2.5) / 2;
+    IMG(B, 0, c.x, c.y, w0, c.h - capH(B, 0));
+    IMG(B, 1, rx, c.y, rw, hh - capH(B, 1));
+    IMG(B, 2, rx, c.y + hh + 2.5, rw, hh - capH(B, 2));
+  }},
+  rendertam: { name: "Render · tam sayfa", g: "Görsel", n: 1, f(B) {
+    const { P, Hu, p } = B, bh = 7.5;
+    IMG(B, 0, 0, 0, 100, Hu - bh, { cap: false });
+    R(B, 0, Hu - bh, 100, bh, P.bg);
+    T(B, p.title, M, Hu - bh / 2 + .9, { d: true, size: 2, weight: 400, ls: .02, w: 55, one: true });
+    T(B, B.s.slots[0].cap || p.author, 100 - M, Hu - bh / 2 + .3, { size: .78, ls: .14, upper: true, align: "right", w: 38, one: true });
+  }},
+  malzeme: { name: "Malzeme ve renk", g: "Metin", n: 3, notes: "Malzeme notu", colors: true, f(B) {
+    chrome(B); const c = content(B), { s, P } = B, g = 2.2, w = (c.w - 2 * g) / 3, ih = c.h * .5;
+    for (let k = 0; k < 3; k++) IMG(B, k, c.x + k * (w + g), c.y, w, ih - capH(B, k));
+    const y0 = c.y + ih + 2.5;
+    T(B, s.notesTitle || "Malzeme ve detay", c.x, y0, { d: true, size: 1.3, ls: .12, upper: true });
+    T(B, s.notes, c.x, y0 + 2.4, { size: .78, lh: 1.7, w: c.w * .45, color: P.muted, clipH: c.h - ih - 5 });
+    const cols = (s.colors || []).slice(0, 6), r = 2.6, sx = c.x + c.w * .52, step = Math.min(7.2, (c.w * .48) / Math.max(1, cols.length));
+    cols.forEach((hex, k) => {
+      const cx = sx + r + k * step, cy = y0 + (c.h - ih - 2.5) / 2 - .5;
+      B.ops.push({ k: "circle", cx, cy, r, fill: hex, stroke: P.line, sw: .05 });
+      T(B, up(hex), cx, cy + r + 1.8, { size: .55, ls: .08, align: "center", color: P.muted });
+    });
+  }},
+  kunye: { name: "Künye · iletişim", g: "Metin", n: 1, notes: "Künye bilgileri", f(B) {
+    chrome(B); const c = content(B), { s, P } = B, bw = c.w * .34;
+    R(B, c.x, c.y, bw, c.h, "none", { stroke: P.ink, sw: .07 });
+    T(B, s.notes, c.x + 2.4, c.y + c.h - 2.4, { size: .78, lh: 2, w: bw - 4.8, bottom: true, max: 14 });
+    IMG(B, 0, c.x + c.w * .5, c.y, c.w * .5, c.h, { cap: false });
+  }},
+  tesekkur: { name: "Kapanış", g: "Kapak", n: 1, f(B) {
+    const { P, Hu, p, s } = B;
+    T(B, s.title, 50, Hu * .16, { d: true, size: 3.2, weight: 400, ls: .1, upper: true, align: "center", w: 80, one: true });
+    T(B, p.author, 50, Hu * .17 + 3.8, { size: .62, ls: .5, upper: true, align: "center", color: P.muted, w: 80, one: true });
+    IMG(B, 0, 0, Hu * .4, 100, Hu * .44, { cap: false });
+  }},
+};
+const TPL_ORDER = ["kapak", "kapakblok", "icindekiler", "bolum", "tesekkur", "metin", "zaman", "malzeme", "kunye", "plan", "plankesit", "analiz6", "analiz4", "surec", "iki", "render", "render3", "rendertam"];
+function bolumNo(B) { let n = 0; for (let i = 0; i <= B.si; i++) if (B.p.sheets[i].tpl === "bolum") n++; return n; }
+function arrow(B, x1, y1, mx, my, x2, y2) {
+  const ang = Math.atan2(y2 - my, x2 - mx), L = 1.1;
+  const a1 = ang + Math.PI * .85, a2 = ang - Math.PI * .85;
+  const d = `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2} M${x2 + L * Math.cos(a1)} ${y2 + L * Math.sin(a1)} L${x2} ${y2} L${x2 + L * Math.cos(a2)} ${y2 + L * Math.sin(a2)}`;
+  B.ops.push({ k: "path", d, color: B.P.ink, sw: .1 });
+}
+function build(p, si, sheetOverride) {
+  const s = ensure(sheetOverride || p.sheets[si]);
+  const f = FMT[p.format] || FMT.W169;
+  const Hu = 100 * f.mm[1] / f.mm[0];
+  const B = { p, s, si, P: pal(p), Hu, ops: [], slots: [] };
+  (TPL[s.tpl] || TPL.iki).f(B);
+  return B;
+}
+
+/* ---------------- Görsel yerleşimi ---------------- */
+function place(op) {
+  const r = op.ref; const iw = r && r.w || 4, ih = r && r.h || 3;
+  const sc = op.fit === "contain" ? Math.min(op.w / iw, op.h / ih) : Math.max(op.w / iw, op.h / ih);
+  const w = iw * sc, h = ih * sc;
+  const px = op.fit === "contain" ? 50 : (op.pos?.x ?? 50), py = op.fit === "contain" ? 50 : (op.pos?.y ?? 50);
+  return { x: op.x + (op.w - w) * px / 100, y: op.y + (op.h - h) * py / 100, w, h };
+}
+
+/* ---------------- SVG çizici (ekran) ---------------- */
+let clipN = 0;
+function svgOf(B) {
+  const { Hu, ops, P } = B; const o = [];
+  o.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 ${Hu.toFixed(3)}" style="font-family:${esc(FONT)}"><rect width="100" height="${Hu}" fill="${P.bg}"/>`);
+  for (const op of ops) {
+    if (op.k === "rect") o.push(`<rect x="${op.x}" y="${op.y}" width="${op.w}" height="${op.h}" fill="${op.fill}" ${op.stroke ? `stroke="${op.stroke}" stroke-width="${op.sw}"` : ""} opacity="${op.op}"/>`);
+    else if (op.k === "img") {
+      const src = srcOf(op.ref);
+      if (!src) { o.push(`<rect x="${op.x}" y="${op.y}" width="${op.w}" height="${op.h}" fill="${P.empty}"/>`); if (op.ref?.l) loadLocal(op.ref.l); continue; }
+      const id = "c" + (++clipN), r = place(op);
+      o.push(`<clipPath id="${id}"><rect x="${op.x}" y="${op.y}" width="${op.w}" height="${op.h}"/></clipPath><image href="${esc(src)}" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" preserveAspectRatio="none" clip-path="url(#${id})"/>`);
+    }
+    else if (op.k === "text") {
+      const anchor = op.align === "right" ? "end" : op.align === "center" ? "middle" : "start";
+      op.lines.forEach((ln, k) => {
+        if (!ln) return;
+        o.push(`<text x="${op.x}" y="${op.y + op.size * .78 + k * op.size * op.lh}" font-size="${op.size}"${op.fam !== FONT ? ` font-family="${esc(op.fam)}"` : ""} font-weight="${op.weight}" letter-spacing="${op.ls * op.size}" fill="${op.color}" opacity="${op.op}" text-anchor="${anchor}">${esc(ln)}</text>`);
+      });
+    }
+    else if (op.k === "line") o.push(`<line x1="${op.x1}" y1="${op.y1}" x2="${op.x2}" y2="${op.y2}" stroke="${op.color}" stroke-width="${op.sw}"/>`);
+    else if (op.k === "circle") o.push(`<circle cx="${op.cx}" cy="${op.cy}" r="${op.r}" fill="${op.fill || "none"}" ${op.stroke ? `stroke="${op.stroke}" stroke-width="${op.sw}"` : ""}/>`);
+    else if (op.k === "path") o.push(`<path d="${op.d}" fill="none" stroke="${op.color}" stroke-width="${op.sw}" stroke-linecap="round" stroke-linejoin="round"/>`);
+    else if (op.k === "grad") { const id = "g" + (++clipN); o.push(`<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></linearGradient><rect x="${op.x}" y="${op.y}" width="${op.w}" height="${op.h}" fill="url(#${id})"/>`); }
+    else if (op.k === "north") {
+      const a = op.a, cx = op.cx, cy = op.top + a / 2;
+      o.push(`<circle cx="${cx}" cy="${cy}" r="${a / 2}" fill="#fff" fill-opacity=".85" stroke="${P.ink}" stroke-width=".08"/><path d="M${cx} ${cy - a * .42} L${cx + a * .17} ${cy + a * .26} L${cx} ${cy + a * .12} L${cx - a * .17} ${cy + a * .26}Z" fill="${P.ink}"/><text x="${cx}" y="${cy + a / 2 + 1.1}" font-size=".8" font-weight="500" text-anchor="middle" fill="${P.ink}">K</text>`);
+    }
+  }
+  o.push("</svg>");
+  return o.join("");
+}
+function sheetHTML(p, si, live) {
+  const B = build(p, si);
+  let html = `<div class="sh${live ? " live" : ""}" data-si="${si}">${svgOf(B)}`;
+  if (live) {
+    for (const sl of B.slots) {
+      const s = B.s.slots[sl.i], key = B.s.id + ":" + sl.i;
+      const st = `left:${sl.x}%;top:${sl.y / B.Hu * 100}%;width:${sl.w}%;height:${sl.h / B.Hu * 100}%`;
+      const multi = (TPL[B.s.tpl].n > 1) ? LET[sl.i] + " · " : "";
+      if (S.uploading.has(key)) html += `<div class="hit busy" style="${st}">Yükleniyor…</div>`;
+      else if (!s.img) html += `<div class="hit empty${sl.w > 40 && sl.h > B.Hu * .6 ? " top" : ""}${S.sel === sl.i ? " sel" : ""}" data-slot="${sl.i}" style="${st}"><div><span>+</span>${multi}Görsel ekle</div></div>`;
+      else html += `<div class="hit full${s.fit === "cover" ? " pan" : ""}${S.sel === sl.i ? " sel" : ""}" data-slot="${sl.i}" style="${st}"><div class="tools"><button data-act="pick" data-i="${sl.i}">Değiştir</button><button data-act="paint" data-i="${sl.i}">Boya</button><button data-act="fit" data-i="${sl.i}">${s.fit === "cover" ? "Sığdır" : "Doldur"}</button><button data-act="rm" data-i="${sl.i}">Kaldır</button></div></div>`;
+    }
+  }
+  return html + "</div>";
+}
+
+/* ---------------- Canvas çizici (dışa aktarma) ---------------- */
+async function fontsReady() {
+  try { await Promise.all([200, 300, 400, 500].map(w => document.fonts.load(`${w} 20px "Inter Tight"`, "AaĞğŞşİıÖöÜüÇç01")).concat([300, 400, 500].map(w => document.fonts.load(`${w} 20px "Cormorant Garamond"`, "AaĞğŞşİıÖöÜüÇç01")))); } catch {}
+}
+function loadImgEl(src) { return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error("Görsel yüklenemedi")); im.src = src; }); }
+async function canvasOf(p, si, pxW) {
+  const B = build(p, si), u = pxW / 100, H = Math.round(B.Hu * u), P = B.P;
+  const cv = document.createElement("canvas"); cv.width = pxW; cv.height = H;
+  const x = cv.getContext("2d");
+  x.fillStyle = P.bg; x.fillRect(0, 0, pxW, H);
+  for (const op of B.ops) {
+    x.save(); x.globalAlpha = op.op ?? 1;
+    if (op.k === "rect") {
+      if (op.fill && op.fill !== "none") { x.fillStyle = op.fill; x.fillRect(op.x * u, op.y * u, op.w * u, op.h * u); }
+      if (op.stroke) { x.strokeStyle = op.stroke; x.lineWidth = op.sw * u; x.strokeRect(op.x * u, op.y * u, op.w * u, op.h * u); }
+    } else if (op.k === "img") {
+      let src = srcOf(op.ref);
+      if (!src && op.ref?.l) src = await loadLocal(op.ref.l);
+      if (!src) { x.fillStyle = P.empty; x.fillRect(op.x * u, op.y * u, op.w * u, op.h * u); }
+      else {
+        try {
+          const im = await loadImgEl(src), r = place({ ...op, ref: { w: im.naturalWidth, h: im.naturalHeight } });
+          x.beginPath(); x.rect(op.x * u, op.y * u, op.w * u, op.h * u); x.clip();
+          x.imageSmoothingQuality = "high";
+          x.drawImage(im, r.x * u, r.y * u, r.w * u, r.h * u);
+        } catch { x.fillStyle = P.empty; x.fillRect(op.x * u, op.y * u, op.w * u, op.h * u); }
+      }
+    } else if (op.k === "text") {
+      setF(x, op.size, op.weight, op.ls, u, op.fam); x.fillStyle = op.color; x.textBaseline = "alphabetic";
+      x.textAlign = op.align === "right" ? "right" : op.align === "center" ? "center" : "left";
+      op.lines.forEach((ln, k) => { if (ln) x.fillText(ln, op.x * u, (op.y + op.size * .78 + k * op.size * op.lh) * u); });
+    } else if (op.k === "line") {
+      x.strokeStyle = op.color; x.lineWidth = op.sw * u; x.beginPath(); x.moveTo(op.x1 * u, op.y1 * u); x.lineTo(op.x2 * u, op.y2 * u); x.stroke();
+    } else if (op.k === "circle") {
+      x.beginPath(); x.arc(op.cx * u, op.cy * u, op.r * u, 0, Math.PI * 2);
+      if (op.fill) { x.fillStyle = op.fill; x.fill(); }
+      if (op.stroke) { x.strokeStyle = op.stroke; x.lineWidth = op.sw * u; x.stroke(); }
+    } else if (op.k === "path") {
+      x.scale(u, u); x.strokeStyle = op.color; x.lineWidth = op.sw; x.lineCap = "round"; x.lineJoin = "round"; x.stroke(new Path2D(op.d));
+    } else if (op.k === "grad") {
+      const g = x.createLinearGradient(0, op.y * u, 0, (op.y + op.h) * u);
+      g.addColorStop(0, "rgba(0,0,0,.18)"); g.addColorStop(1, "rgba(0,0,0,.62)");
+      x.fillStyle = g; x.fillRect(op.x * u, op.y * u, op.w * u, op.h * u);
+    } else if (op.k === "north") {
+      const a = op.a, cx = op.cx, cy = op.top + a / 2;
+      x.scale(u, u);
+      x.beginPath(); x.arc(cx, cy, a / 2, 0, Math.PI * 2); x.fillStyle = "rgba(255,255,255,.85)"; x.fill(); x.strokeStyle = P.ink; x.lineWidth = .08; x.stroke();
+      x.fill(new Path2D(`M${cx} ${cy - a * .42} L${cx + a * .17} ${cy + a * .26} L${cx} ${cy + a * .12} L${cx - a * .17} ${cy + a * .26}Z`));
+      x.fillStyle = P.ink; x.fill(new Path2D(`M${cx} ${cy - a * .42} L${cx + a * .17} ${cy + a * .26} L${cx} ${cy + a * .12} L${cx - a * .17} ${cy + a * .26}Z`));
+      x.setTransform(1, 0, 0, 1, 0, 0);
+      setF(x, .8, 500, 0, u); x.textAlign = "center"; x.fillText("K", cx * u, (cy + a / 2 + 1.1) * u);
+    }
+    x.restore();
+  }
+  return cv;
+}
+
+/* ---------------- Depolama: bulut (db + assets), yoksa bu tarayıcı ---------------- */
+const Store = { mode: "local", db: null, assets: null, dl: null, projects: [], urls: new Map(), loading: new Map(), mem: new Map() };
+let idb = null;
+function idbOpen() {
+  return new Promise(res => {
+    try {
+      const r = indexedDB.open("sunum-altligi", 1);
+      r.onupgradeneeded = () => { r.result.createObjectStore("projects", { keyPath: "id" }); r.result.createObjectStore("images"); };
+      r.onsuccess = () => { idb = r.result; res(); };
+      r.onerror = () => res();
+    } catch { res(); }
+  });
+}
+function idbDo(store, mode, fn) {
+  return new Promise((res, rej) => {
+    if (!idb) return res(null);
+    try { const t = idb.transaction(store, mode), q = fn(t.objectStore(store)); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); } catch (e) { rej(e); }
+  });
+}
+async function initStore() {
+  let db = null, assets = null, dl = null;
+  try {
+    if (window.claude && claude.use) [db, assets, dl] = await Promise.all([claude.use("db"), claude.use("assets"), claude.use("downloads")]);
+  } catch {}
+  Store.dl = dl;
+  if (db) {
+    Store.mode = "cloud"; Store.db = db; Store.assets = assets;
+    await new Promise(res => {
+      let done = false;
+      const fin = () => { if (!done) { done = true; res(); } };
+      const t = setTimeout(() => { toast("Kayıtlara ulaşılamadı. Bağlantını kontrol edip sayfayı yenile."); fin(); }, 10000);
+      db.collection("projects").onSnapshot(snap => {
+        clearTimeout(t);
+        Store.projects = snap.docs.map(d => { try { const v = d.data(); return v ? clone(v) : null; } catch { return null; } }).filter(Boolean);
+        fin(); if (S.view === "home" && S.started) safe(renderHome);
+      }, err => { clearTimeout(t); toast("Kayıtlar yüklenemedi (" + err.code + ")."); fin(); });
+    });
+  } else {
+    Store.mode = "local";
+    await idbOpen();
+    try { Store.projects = (await idbDo("projects", "readonly", s => s.getAll())) || []; } catch { Store.projects = []; }
+  }
+}
+async function savePj(p) {
+  const d = clone(p);
+  if (Store.mode === "cloud") await Store.db.doc("projects/" + p.id).set(d);
+  else {
+    await idbDo("projects", "readwrite", s => s.put(d));
+    const i = Store.projects.findIndex(x => x.id === d.id);
+    if (i >= 0) Store.projects[i] = d; else Store.projects.push(d);
+  }
+}
+async function delPj(id) {
+  if (Store.mode === "cloud") await Store.db.doc("projects/" + id).delete();
+  else { await idbDo("projects", "readwrite", s => s.delete(id)); Store.projects = Store.projects.filter(x => x.id !== id); }
+}
+async function putImage(blob) {
+  if (Store.mode === "cloud") {
+    if (!Store.assets) throw new Error("Görsel yüklemek için bu sunuma düzenleme yetkin olmalı.");
+    try { const r = await Store.assets.upload(blob, { type: blob.type }); return { a: r.id }; }
+    catch (e) {
+      const m = { too_large: "Görsel 20 MB sınırını aşıyor.", unsupported_type: "Bu dosya türü desteklenmiyor. PNG, JPG veya WEBP kullan.", quota_or_state: "Depolama alanı dolu.", rate_limited: "Çok hızlı yükleme yapıldı, biraz bekleyip tekrar dene." }[e.code];
+      throw new Error(m || "Yükleme başarısız oldu, tekrar dene.");
+    }
+  }
+  const k = uid();
+  Store.mem.set(k, blob);
+  try { await idbDo("images", "readwrite", s => s.put(blob, k)); } catch {}
+  Store.urls.set(k, URL.createObjectURL(blob));
+  return { l: k };
+}
+function srcOf(ref) {
+  if (!ref) return null;
+  if (ref.u) return ref.u;
+  if (ref.a) return "/_blob/" + ref.a;
+  if (ref.l) return Store.urls.get(ref.l) || null;
+  return null;
+}
+function loadLocal(k) {
+  if (Store.urls.has(k)) return Promise.resolve(Store.urls.get(k));
+  if (Store.loading.has(k)) return Store.loading.get(k);
+  const pr = (async () => {
+    let b = Store.mem.get(k);
+    if (!b) { try { b = await idbDo("images", "readonly", s => s.get(k)); } catch {} }
+    if (!b) return null;
+    const u = URL.createObjectURL(b); Store.urls.set(k, u);
+    S.view === "home" ? renderHome() : refresh(["stage", "list", "panel"]);
+    return u;
+  })();
+  Store.loading.set(k, pr); return pr;
+}
+
+/* ---------------- Uygulama durumu ---------------- */
+const S = { view: "home", cur: null, si: 0, sel: null, hist: [], fut: [], lastKey: null, lastT: 0, tab: "sheet", uploading: new Set(), newOpen: false, addOpen: false, expOpen: false, confirm: null, saveT: null, saveSt: "", busy: false, pickI: null };
+const app = document.getElementById("app"), fileIn = document.getElementById("file");
+let toastT;
+function toast(m) { const t = document.getElementById("toast"); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 4200); }
+const sheet = () => S.cur.sheets[S.si];
+
+function mutate(fn, key) {
+  const now = Date.now();
+  if (!(key && key === S.lastKey && now - S.lastT < 1500)) {
+    S.hist.push(JSON.stringify(S.cur)); if (S.hist.length > 100) S.hist.shift(); S.fut = [];
+  }
+  S.lastKey = key; S.lastT = now;
+  fn(S.cur); S.cur.updated = now;
+  queueSave(); setUndo();
+}
+function undo() { if (!S.hist.length) return; S.fut.push(JSON.stringify(S.cur)); S.cur = JSON.parse(S.hist.pop()); S.lastKey = null; afterHistory(); }
+function redo() { if (!S.fut.length) return; S.hist.push(JSON.stringify(S.cur)); S.cur = JSON.parse(S.fut.pop()); S.lastKey = null; afterHistory(); }
+function afterHistory() { S.si = Math.min(S.si, S.cur.sheets.length - 1); S.sel = null; S.cur.updated = Date.now(); queueSave(); renderEditor(); }
+function setUndo() { const u = app.querySelector('[data-act="undo"]'), r = app.querySelector('[data-act="redo"]'); if (u) u.disabled = !S.hist.length; if (r) r.disabled = !S.fut.length; }
+
+function setSave(t, err) { S.saveSt = t; const el = app.querySelector(".bar .st"); if (el) { el.textContent = t; el.classList.toggle("err", !!err); } }
+function queueSave() { setSave("Kaydedilmedi"); clearTimeout(S.saveT); S.saveT = setTimeout(flush, 900); }
+async function flush() {
+  clearTimeout(S.saveT); S.saveT = null;
+  if (!S.cur) return;
+  const p = S.cur;
+  setSave("Kaydediliyor…");
+  try {
+    await savePj(p);
+    const d = new Date(); setSave("Kaydedildi · " + p2(d.getHours()) + ":" + p2(d.getMinutes()));
+  } catch (e) { setSave("Kaydedilemedi — Kaydet'e tekrar bas", true); }
+}
+
+/* ---------------- Yeni sunum ---------------- */
+function mk(tpl, title, o = {}) {
+  const s = { id: uid(), tpl, title, scale: o.scale || "", notes: o.notes || "", notesTitle: o.nt || "", north: !!o.north, big: "", slots: [] };
+  (o.caps || []).forEach((c, i) => s.slots.push(newSlot(c, (o.txts || [])[i] || "")));
+  return ensure(s);
+}
+function starter(full) {
+  const L = [mk("kapak", "Kapak")];
+  if (!full) return L;
+  L.push(
+    mk("icindekiler", "İçindekiler"),
+    mk("metin", "Proje hakkında", { notes: "Projenin çıkış noktası, kullanıcı ve bağlam üzerine kısa bir metin. Tasarım fikrini iki üç paragrafta anlat; jürinin ilk okuyacağı yer burası." }),
+    mk("bolum", "Analiz", { notes: "Alanın iklim, ulaşım, yeşil doku ve topografya verileri üzerinden okunması." }),
+    mk("analiz6", "Alan analizleri", { caps: ["Güneş", "Rüzgâr", "Ulaşım", "Yeşil alan", "Topografya", "Yakın çevre"] }),
+    mk("surec", "Tasarım süreci", { caps: ["Kütle yerleşimi", "Boşluk ve avlu", "Dolaşım"], txts: ["Parsel sınırları içinde ana kütlenin konumlanması.", "Kütlenin oyularak ortak avlunun kurulması.", "Giriş, dikey dolaşım ve servis akslarının çözümü."] }),
+    mk("bolum", "Tasarım", { notes: "Planlar, kesitler ve görünüşler." }),
+    mk("plan", "Vaziyet planı", { scale: "1/500", north: true, caps: ["Vaziyet planı", "Anahtar plan"], notes: "1  Ana giriş\n2  Otopark\n3  Ortak avlu\n4  Servis yolu", nt: "Lejant" }),
+    mk("plankesit", "Zemin kat planı", { scale: "1/100", north: true, caps: ["Zemin kat planı", "A-A kesiti", "B-B kesiti"] }),
+    mk("iki", "Görünüşler", { scale: "1/100", caps: ["Kuzey görünüşü", "Güney görünüşü"] }),
+    mk("malzeme", "Malzeme ve renk", { caps: ["Cephe", "Zemin", "İç mekân"], notes: "Ham beton, açık meşe ve kireç sıva; sıcak ve dokulu bir palet." }),
+    mk("render3", "Renderlar", { caps: ["Dış perspektif", "İç mekân", "Detay"] }),
+    mk("rendertam", "Atmosfer", { caps: ["Akşam görünümü"] }),
+    mk("zaman", "Proje takvimi"),
+    mk("tesekkur", "Teşekkürler"),
+  );
+  return L;
+}
+
+/* ---------------- Ana sayfa ---------------- */
+function bar(inner) { return `<header class="bar gut">${inner}</header>`; }
+function renderHome() {
+  S.view = "home";
+  const list = [...Store.projects].sort((a, b) => (b.updated || 0) - (a.updated || 0));
+  const where = Store.mode === "cloud" ? "Kayıtlar hesabında; her bilgisayardan açılır" : "Kayıtlar yalnız bu tarayıcıda";
+  let cards = list.map((p, k) => {
+    const d = p.updated ? new Date(p.updated) : null;
+    const conf = S.confirm === "del:" + p.id;
+    return `<article class="card">
+      <button class="thumb" data-act="open" data-id="${p.id}" aria-label="${esc(p.title)} sunumunu aç">${p.sheets?.length ? sheetHTML(p, 0, false) : ""}</button>
+      <div class="cap"><span class="no">${p2(k + 1)}</span><h3>${esc(p.title || "Adsız sunum")}</h3><span class="y">${p.sheets?.length || 0} sayfa</span></div>
+      <div class="meta">${esc((FMT[p.format] || FMT.W169).name)}${d ? " · " + d.getDate() + " " + AY[d.getMonth()] + " " + p2(d.getHours()) + ":" + p2(d.getMinutes()) : ""}</div>
+      <div class="cact"><button class="btn" data-act="open" data-id="${p.id}"><span class="r">→</span>Aç</button><button class="btn m" data-act="dup" data-id="${p.id}">Çoğalt</button><button class="btn ${conf ? "u" : "m"}" data-act="del" data-id="${p.id}">${conf ? "Silmeyi onayla" : "Sil"}</button></div>
+    </article>`;
+  }).join("");
+  const form = S.newOpen ? `<form class="newform" id="nf">
+      <div class="f full"><label for="n-title">Proje adı</label><input id="n-title" required placeholder="Ör. Kıyı Kütüphanesi" autocomplete="off"></div>
+      <div class="f"><label for="n-sub">Alt başlık</label><input id="n-sub" placeholder="Ör. Mimari Tasarım VII · Kadıköy"></div>
+      <div class="f"><label for="n-author">Hazırlayan / stüdyo</label><input id="n-author" value="Esma Dado"></div>
+      <div class="f"><label for="n-format">Format</label><select id="n-format">${Object.entries(FMT).map(([k, f]) => `<option value="${k}">${f.name}</option>`).join("")}</select></div>
+      <div class="f"><label for="n-theme">Renk teması</label><select id="n-theme">${Object.entries(THEMES).map(([k, t]) => `<option value="${k}">${t.name}</option>`).join("")}</select></div>
+      <div class="f full"><span class="lbl">Başlangıç</span><div class="radios">
+        <label><input type="radio" name="n-set" value="full" checked> Hazır akış (kapak, analiz, planlar, kesitler, renderlar, kapanış · 15 sayfa)</label>
+        <label><input type="radio" name="n-set" value="empty"> Yalnız kapak</label></div></div>
+      <div class="full" style="display:flex;gap:24px"><button class="btn u" type="submit"><span class="r">+</span>Sunumu oluştur</button><button class="btn m" type="button" data-act="newclose">Vazgeç</button></div>
+    </form>` : "";
+  app.innerHTML = bar(`<span class="who">Esma Dado</span><div class="mid"><span class="t">Sunum Altlığı</span><span class="st hide-s">${where}</span></div><div class="acts"><a class="btn" href="${PORTFOLIO}" target="_blank" rel="noopener">Portfolyo ↗</a></div>`) +
+  `<main class="home"><div class="home-in gut">
+    <section class="hero"><h1>Sunum<br>altlığı<i>.</i></h1><p>Plan, analiz ve render görsellerini sürükle bırak; sayfalar düzeni korur. Sunumlar otomatik kaydedilir, PNG ya da tek PDF olarak dışa aktarılır.</p></section>
+    <section class="sec"><div class="sec-head"><span>01</span>Sunumlar</div><div class="sec-body">
+      ${S.newOpen ? "" : `<div class="cards"><button class="newcard" data-act="newopen">+ Yeni sunum</button>${cards}</div>`}
+      ${S.newOpen ? form : ""}
+      ${!list.length && !S.newOpen ? `<p class="empty-note">Henüz sunum yok. Yeni sunum ile hazır akışı açabilir, görselleri kendi çizimlerinle doldurabilirsin.</p>` : ""}
+    </div></section>
+  </div></main>`;
+  if (S.newOpen) { const t = document.getElementById("n-title"); t && t.focus(); }
+}
+async function createProject(e) {
+  e.preventDefault();
+  const v = id => document.getElementById(id).value.trim();
+  const full = document.querySelector('input[name="n-set"]:checked').value === "full";
+  const p = { id: uid(), title: v("n-title") || "Adsız sunum", sub: v("n-sub"), author: v("n-author"), date: today(), format: v("n-format"), theme: v("n-theme"), created: Date.now(), updated: Date.now(), sheets: starter(full) };
+  S.newOpen = false;
+  try { await savePj(p); } catch { toast("Sunum kaydedilemedi, tekrar dene."); return; }
+  if (!Store.projects.find(x => x.id === p.id)) Store.projects.push(clone(p));
+  nav(p.id);
+}
+
+/* ---------------- Düzenleyici ---------------- */
+function openProject(id) {
+  if (S.cur && S.cur.id === id && S.view === "editor") return;
+  const p = Store.projects.find(x => x.id === id);
+  if (!p) { toast("Bu sunum bulunamadı."); nav(null); return; }
+  S.cur = clone(p); S.si = 0; S.sel = null; S.hist = []; S.fut = []; S.addOpen = false; S.expOpen = false;
+  S.saveSt = "Kaydedildi";
+  renderEditor();
+}
+function renderEditor() {
+  S.view = "editor";
+  const p = S.cur;
+  app.innerHTML = bar(`<button class="btn" data-act="home"><span class="r">←</span>Sunumlar</button>
+    <div class="mid"><span class="t hide-s">${esc(p.title)}</span><span class="st"></span></div>
+    <div class="acts"><button class="btn m" data-act="undo" title="Geri al (Ctrl+Z)">Geri al</button><button class="btn m hide-s" data-act="redo" title="Yinele (Ctrl+Shift+Z)">Yinele</button><button class="btn" data-act="planpaint"><span class="r">◐</span>Plan boya</button><button class="btn" data-act="save" title="Ctrl+S">Kaydet</button>
+    <div class="menu-w"><button class="btn u" data-act="exp">Dışa aktar</button><div class="menu" ${S.expOpen ? "" : "hidden"}>
+      <div class="mcol"><span class="mh">Bu sayfa</span><button data-act="png">PNG <small>kayıpsız</small></button><button data-act="jpg">JPEG <small>küçük dosya</small></button></div>
+      <div class="mcol"><span class="mh">Tüm sunum</span><button data-act="pdf">PDF <small>${p.sheets.length} sayfa</small></button></div>
+    </div></div></div>`) +
+    `<div class="ed"><aside class="ed-list" id="list"></aside><section class="stage" id="stage"></section><aside class="ed-panel" id="panel"></aside></div>`;
+  setSave(S.saveSt); setUndo();
+  renderList(); renderStage(); renderPanel();
+}
+function renderList() {
+  const el = document.getElementById("list"); if (!el) return;
+  const p = S.cur;
+  let h = `<div class="lh side"><span>${p2(S.si + 1)}/${p2(p.sheets.length)}</span>Sayfalar</div>`;
+  p.sheets.forEach((s, i) => {
+    h += `<button class="li${i === S.si ? " on" : ""}" data-act="go" data-i="${i}"><div class="mini">${sheetHTML(p, i, false)}</div><div class="lc"><b>${p2(i + 1)}</b><span>${esc(s.title || TPL[s.tpl].name)}</span></div></button>`;
+    if (i === S.si) {
+      const c = S.confirm === "sheet:" + s.id;
+      h += `<div class="li-ops side"><button class="btn m" data-act="mv" data-d="-1" ${i === 0 ? "disabled" : ""}>↑ Yukarı</button><button class="btn m" data-act="mv" data-d="1" ${i === p.sheets.length - 1 ? "disabled" : ""}>↓ Aşağı</button><button class="btn m" data-act="dupsheet">Çoğalt</button><button class="btn ${c ? "u" : "m"}" data-act="delsheet" ${p.sheets.length < 2 ? "disabled" : ""}>${c ? "Silmeyi onayla" : "Sil"}</button></div>`;
+    }
+  });
+  h += `<div class="addw side"><button class="btn u" data-act="addtoggle"><span class="r">+</span>Sayfa ekle</button>${S.addOpen ? `<div class="addlist">${TPL_ORDER.map(k => `<button data-act="add" data-t="${k}">${TPL[k].name}</button>`).join("")}</div>` : ""}</div>`;
+  el.innerHTML = h;
+}
+function renderStage() {
+  const el = document.getElementById("stage"); if (!el) return;
+  const B = build(S.cur, S.si);
+  const s = sheet(), n = TPL[s.tpl].n;
+  el.innerHTML = `<div class="stage-in" style="--r:${(100 / B.Hu).toFixed(4)}">${sheetHTML(S.cur, S.si, true)}
+    <div class="hint"><span><b>${p2(S.si + 1)}</b> · ${esc(TPL[s.tpl].name)}</span><span>${n ? "Görselleri çerçeveye sürükle, tıkla ya da yapıştır (Ctrl+V). Doldurulmuş görseli sürükleyerek kadrajı kaydır." : "Bu sayfada görsel yok; metinleri sağdaki panelden düzenle."}</span></div></div>`;
+}
+function fld(id, label, val, o = {}) {
+  if (o.area) return `<div class="f"><label for="${id}">${label}</label><textarea id="${id}" rows="${o.rows || 5}" placeholder="${esc(o.ph || "")}">${esc(val)}</textarea></div>`;
+  return `<div class="f"><label for="${id}">${label}</label><input id="${id}" value="${esc(val)}" placeholder="${esc(o.ph || "")}" autocomplete="off"></div>`;
+}
+function tplThumb(k) {
+  const fake = { ...clone(sheet()), tpl: k, slots: clone(sheet().slots).map(x => ({ ...x, img: null })) };
+  ensure(fake);
+  const B = build(S.cur, S.si, fake);
+  return svgOf(B);
+}
+function renderPanel() {
+  const el = document.getElementById("panel"); if (!el) return;
+  const ae = document.activeElement, aid = ae && ae.id, ss = ae && ae.selectionStart, se = ae && ae.selectionEnd, st = el.scrollTop;
+  const p = S.cur, s = sheet(), t = TPL[s.tpl];
+  let h = `<div class="tabs"><button class="${S.tab === "sheet" ? "on" : ""}" data-act="tab" data-t="sheet">Sayfa ${p2(S.si + 1)}</button><button class="${S.tab === "proj" ? "on" : ""}" data-act="tab" data-t="proj">Proje</button></div>`;
+  if (S.tab === "sheet") {
+    h += `<div class="grp">${fld("f-title", "Sayfa başlığı", s.title)}`;
+    if (t.scale) h += fld("f-scale", "Ölçek", s.scale, { ph: "1/100" });
+    if (t.big) h += fld("f-big", "Büyük numara", s.big, { ph: "Boş bırakılırsa otomatik" });
+    if (t.notes) { if (t.nt) h += fld("f-notesTitle", "Metin başlığı", s.notesTitle, { ph: t.notes }); h += fld("f-notes", t.notes, s.notes, { area: true, rows: s.tpl === "kunye" ? 8 : 5 }); }
+    if (t.north) h += `<label class="chk"><input type="checkbox" id="f-north" ${s.north ? "checked" : ""}> Kuzey oku (ilk görselde)</label>`;
+    if (["kapak", "kapakblok", "rendertam"].includes(s.tpl)) h += `<p class="note">Kapak yazıları Proje sekmesindeki ad, alt başlık, tarih ve hazırlayandan gelir.</p>`;
+    h += `</div>`;
+    if (t.n) {
+      h += `<div class="grp"><h4><span>Görseller</span><span>${t.n}</span></h4><div>`;
+      for (let i = 0; i < t.n; i++) {
+        const sl = s.slots[i], src = srcOf(sl.img);
+        h += `<div class="slotrow${S.sel === i ? " sel" : ""}"><span class="sl">${LET[i]}</span>
+          <button class="sth" data-act="pick" data-i="${i}" aria-label="${LET[i]} görselini seç">${src ? `<img src="${esc(src)}" alt="">` : "+"}</button>
+          <div><input id="cap-${i}" value="${esc(sl.cap)}" placeholder="${s.tpl === "rendertam" ? "Sağ alt yazı" : "Görsel başlığı"}">
+          ${t.stxt ? `<textarea id="txt-${i}" placeholder="Kısa açıklama">${esc(sl.txt)}</textarea>` : ""}
+          <div class="sbtns"><button class="btn m" data-act="pick" data-i="${i}">${sl.img ? "Değiştir" : "Yükle"}</button>${sl.img ? `<button class="btn m" data-act="paint" data-i="${i}">${sl.paint ? "Boyamayı düzenle" : "Plan boya"}</button>${sl.paint ? `<button class="btn m" data-act="unpaint" data-i="${i}">Boyamayı kaldır</button>` : ""}<button class="btn m" data-act="fit" data-i="${i}">${sl.fit === "cover" ? "Sığdır" : "Doldur"}</button><button class="btn m" data-act="rm" data-i="${i}">Kaldır</button>` : ""}</div></div></div>`;
+      }
+      h += `</div></div>`;
+    }
+    if (t.steps) {
+      h += `<div class="grp"><h4><span>Adımlar</span><span>${s.steps.length}</span></h4><div>`;
+      s.steps.forEach((st2, i) => {
+        h += `<div class="steprow"><div class="row2"><div class="f"><label for="st-t-${i}">Adım ${i + 1}</label><input id="st-t-${i}" value="${esc(st2.t)}"></div><div class="f"><label for="st-d-${i}">Tarih</label><input id="st-d-${i}" value="${esc(st2.d)}"></div></div><div class="f"><label for="st-x-${i}">Açıklama</label><input id="st-x-${i}" value="${esc(st2.x)}"></div>${s.steps.length > 2 ? `<div class="sbtns"><button class="btn m" data-act="steprm" data-i="${i}">Adımı kaldır</button></div>` : ""}</div>`;
+      });
+      h += `</div>${s.steps.length < 6 ? `<button class="btn u" data-act="stepadd"><span class="r">+</span>Adım ekle</button>` : ""}</div>`;
+    }
+    if (t.colors) {
+      h += `<div class="grp"><h4><span>Renk paleti</span><span>${s.colors.length}</span></h4><div class="sw">${s.colors.map((c, i) => `<label for="col-${i}"><input type="color" id="col-${i}" value="${esc(c)}">${up(c)}</label>`).join("")}</div><div class="sbtns">${s.colors.length < 6 ? `<button class="btn m" data-act="coladd">Renk ekle</button>` : ""}${s.colors.length > 1 ? `<button class="btn m" data-act="colrm">Sonuncuyu kaldır</button>` : ""}</div></div>`;
+    }
+    h += `<div class="grp"><h4><span>Yerleşim</span><span>${esc(t.name)}</span></h4><div class="tpls">${TPL_ORDER.map(k => `<button class="tpl${k === s.tpl ? " on" : ""}" data-act="tpl" data-t="${k}"><span class="tm">${tplThumb(k)}</span>${TPL[k].name}</button>`).join("")}</div></div>`;
+  } else {
+    h += `<div class="grp">${fld("p-title", "Proje adı", p.title)}${fld("p-sub", "Alt başlık", p.sub, { ph: "Ders · konum" })}<div class="row2">${fld("p-author", "Hazırlayan / stüdyo", p.author)}${fld("p-date", "Tarih", p.date)}</div>
+      <div class="f"><label for="p-format">Format</label><select id="p-format">${Object.entries(FMT).map(([k, f]) => `<option value="${k}" ${k === p.format ? "selected" : ""}>${f.name}</option>`).join("")}</select></div></div>
+      <div class="grp"><h4><span>Renk teması</span><span>${esc((THEMES[p.theme] || THEMES.kagit).name)}</span></h4><div class="themes">${Object.entries(THEMES).map(([k, th]) => `<button class="theme${k === (p.theme || "kagit") ? " on" : ""}" data-act="theme" data-t="${k}"><i><b style="background:${th.bg}"></b><b style="background:${th.block}"></b><b style="background:${th.ink}"></b></i>${th.name}</button>`).join("")}</div>
+      <p class="note">${Store.mode === "cloud" ? "Bu sunum claude.ai hesabına kaydediliyor. Aynı hesapla giriş yaptığın her bilgisayardan bu sayfayı açıp devam edebilirsin." : "Bu görünümde bulut kaydı yok; değişiklikler yalnız bu tarayıcıda tutuluyor."}</p></div>`;
+  }
+  el.innerHTML = h;
+  el.scrollTop = st;
+  if (aid) { const n = document.getElementById(aid); if (n) { n.focus(); try { n.setSelectionRange(ss, se); } catch {} } }
+}
+let rafP = new Set(), rafId = 0;
+function refresh(parts) {
+  parts.forEach(x => rafP.add(x));
+  if (rafId) return;
+  rafId = requestAnimationFrame(() => {
+    rafId = 0; const ps = rafP; rafP = new Set();
+    if (S.view !== "editor") return;
+    if (ps.has("stage")) renderStage();
+    if (ps.has("list")) renderList();
+    if (ps.has("panel")) renderPanel();
+  });
+}
+
+/* ---------------- Görsel yükleme ---------------- */
+async function prep(file) {
+  let bmp;
+  try { bmp = await createImageBitmap(file); } catch { throw new Error(`"${file.name}" okunamadı. PNG, JPG veya WEBP kullan (PDF ve HEIC desteklenmiyor).`); }
+  const w = bmp.width, h = bmp.height;
+  const ok = ["image/png", "image/jpeg", "image/webp", "image/gif"].includes(file.type);
+  if (ok && file.size <= 19.5e6) { bmp.close && bmp.close(); return { blob: file, w, h }; }
+  for (const max of [7000, 5000, 3500]) {
+    const s = Math.min(1, max / Math.max(w, h)), cv = document.createElement("canvas");
+    cv.width = Math.round(w * s); cv.height = Math.round(h * s);
+    const x = cv.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(bmp, 0, 0, cv.width, cv.height);
+    const blob = await new Promise(r => cv.toBlob(r, "image/jpeg", .92));
+    if (blob && blob.size <= 19.5e6) { bmp.close && bmp.close(); return { blob, w: cv.width, h: cv.height }; }
+  }
+  throw new Error("Görsel çok büyük, küçültüp tekrar dene.");
+}
+const isImg = f => f && (f.type.startsWith("image/") || /\.(png|jpe?g|webp|gif)$/i.test(f.name));
+async function uploadInto(files, i0) {
+  files = files.filter(isImg);
+  if (!files.length) { toast("Görsel dosyası bulunamadı."); return; }
+  const pid = S.cur.id, sh = sheet(), n = TPL[sh.tpl].n, targets = [];
+  if (!n) { toast("Bu sayfada görsel çerçevesi yok. Yerleşimi değiştir."); return; }
+  if (i0 != null) targets.push(i0);
+  for (let k = 0; k < n && targets.length < files.length; k++) if (!sh.slots[k].img && !targets.includes(k) && !S.uploading.has(sh.id + ":" + k)) targets.push(k);
+  if (!targets.length) { toast("Boş çerçeve kalmadı. Bir çerçeveye bırakırsan görseli değiştirir."); return; }
+  if (files.length > targets.length) toast(`${targets.length} görsel yerleşti; ${files.length - targets.length} tanesine yer yok.`);
+  await Promise.all(targets.map(async (k, j) => {
+    const key = sh.id + ":" + k; S.uploading.add(key); refresh(["stage"]);
+    try {
+      const { blob, w, h } = await prep(files[j]);
+      const ref = await putImage(blob); ref.w = w; ref.h = h;
+      if (S.cur && S.cur.id === pid) mutate(p => { const s2 = p.sheets.find(x => x.id === sh.id); if (s2) { s2.slots[k].img = ref; s2.slots[k].pos = { x: 50, y: 50 }; delete s2.slots[k].paint; if (TPL[s2.tpl].g === "Plan") s2.slots[k].fit = "contain"; } });
+    } catch (e) { toast(e.message || "Yükleme başarısız oldu."); }
+    finally { S.uploading.delete(key); refresh(["stage", "list", "panel"]); }
+  }));
+  if (S.afterUploadPaint) { S.afterUploadPaint = false; const s = sheet(); if (s.id === sh.id && s.slots[targets[0]]?.img) { S.sel = targets[0]; openPainter(targets[0]); } }
+}
+function pick(i) { S.pickI = i; fileIn.value = ""; fileIn.click(); }
+fileIn.addEventListener("change", () => { const fs = [...fileIn.files]; if (fs.length && S.cur) uploadInto(fs, S.pickI); });
+
+/* ---------------- Dışa aktarma ---------------- */
+const slug = s => (s || "sunum").toLocaleLowerCase("tr").replace(/[ğüşıöç]/g, c => ({ ğ: "g", ü: "u", ş: "s", ı: "i", ö: "o", ç: "c" }[c])).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "sunum";
+async function offer(filename, blob) {
+  if (!Store.dl) {
+    try { const a = document.createElement("a"), u = URL.createObjectURL(blob); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); toast("Dosya indiriliyor: " + filename); }
+    catch { toast("Bu görünümde dosya kaydedilemiyor."); }
+    return;
+  }
+  try { await Store.dl.save({ filename, data: blob }); toast("Dosya kaydedildi: " + filename); }
+  catch (e) { toast(e.code === "declined" ? "Kaydetme iptal edildi." : e.code === "rate_limited" ? "Bir kaydetme penceresi zaten açık." : "Dosya kaydedilemedi."); }
+}
+async function exportPNG(jpg) {
+  if (S.busy) return; S.busy = true; toast((jpg ? "JPEG" : "PNG") + " hazırlanıyor…");
+  try {
+    await fontsReady(); if (S.saveT) await flush();
+    const cv = await canvasOf(S.cur, S.si, (FMT[S.cur.format] || FMT.W169).px);
+    const blob = await new Promise(r => jpg ? cv.toBlob(r, "image/jpeg", .92) : cv.toBlob(r, "image/png"));
+    await offer(`${slug(S.cur.title)}-${p2(S.si + 1)}.${jpg ? "jpg" : "png"}`, blob);
+  } catch (e) { toast("Görsel oluşturulamadı."); }
+  S.busy = false;
+}
+async function exportPDF() {
+  if (S.busy) return;
+  if (!window.jspdf) { toast("PDF aracı yüklenemedi. Sayfayı yenileyip tekrar dene."); return; }
+  S.busy = true;
+  try {
+    await fontsReady(); if (S.saveT) await flush();
+    const f = FMT[S.cur.format] || FMT.W169, [mw, mh] = f.mm;
+    const doc = new jspdf.jsPDF({ orientation: "l", unit: "mm", format: [mw, mh], compress: true });
+    const px = Math.min(f.px, 3508);
+    for (let i = 0; i < S.cur.sheets.length; i++) {
+      toast(`PDF hazırlanıyor… ${i + 1}/${S.cur.sheets.length}`);
+      const cv = await canvasOf(S.cur, i, px);
+      if (i > 0) doc.addPage([mw, mh], "l");
+      doc.addImage(cv.toDataURL("image/jpeg", .9), "JPEG", 0, 0, mw, mh, undefined, "FAST");
+      cv.width = cv.height = 0;
+    }
+    await offer(`${slug(S.cur.title)}.pdf`, doc.output("blob"));
+  } catch (e) { toast("PDF oluşturulamadı."); }
+  S.busy = false;
+}
+
+/* ---------------- Plan boya ---------------- */
+const PRESETS = {
+  fonksiyon: [
+    ["Yaşama alanı", "#ead9c3", "duz"], ["Yatak odası", "#d8dfe9", "duz"], ["Mutfak", "#eedfb6", "duz"], ["Islak hacim", "#cde2e0", "duz"],
+    ["Dolaşım", "#e9e7e3", "duz"], ["Servis", "#e1d8e8", "duz"], ["Teras", "#e6dccb", "duz"], ["Yeşil alan", "#cbdabd", "duz"],
+  ],
+  malzeme: [
+    ["Ahşap parke", "#c9a27a", "parke"], ["Seramik", "#e6e1d8", "seramik"], ["Islak hacim seramiği", "#d3e0df", "seramik"], ["Beton", "#c2bfb8", "beton"],
+    ["Çim", "#9db384", "cim"], ["Çakıl", "#d2cabd", "cakil"], ["Havuz", "#95c4d1", "su"], ["Duvar (poşe)", "#1d1c1a", "duz"],
+  ],
+};
+const TEX = { duz: "Düz renk", parke: "Ahşap parke", seramik: "Seramik", beton: "Beton", cim: "Çim", cakil: "Çakıl", su: "Su", tarama: "Tarama" };
+const PP = { on: false };
+const ppRoot = document.createElement("div"); ppRoot.id = "pp"; ppRoot.hidden = true; document.body.appendChild(ppRoot);
+const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+function hashN(a, b) { let h = (a * 374761393 + b * 668265263) >>> 0; h = (h ^ (h >>> 13)) * 1274126177 >>> 0; return (h & 0xffff) / 65535; }
+function makeTile(tex, hex, S) {
+  S = Math.max(8, Math.round(S));
+  const [R0, G0, B0] = hex2rgb(hex), r = rng(S * 7 + tex.length * 131 + R0);
+  let w = S, h = S;
+  if (tex === "parke") { w = S * 4; h = S; }
+  const d = new Uint8ClampedArray(w * h * 4);
+  const set = (x, y, f, add = 0) => { const j = (y * w + x) * 4; d[j] = R0 * f + add; d[j + 1] = G0 * f + add; d[j + 2] = B0 * f + add; d[j + 3] = 255; };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let f = 1, add = 0;
+    if (tex === "parke") {
+      const ph = S / 5, row = Math.floor(y / ph), off = ((row * 0.37) % 1) * 2 * S, pl = Math.floor((x + off) / (2 * S)) % 2;
+      f = .9 + hashN(row, pl) * .18;
+      const lx = (x + off) % (2 * S), ly = y % ph;
+      if (ly < 1 || lx < 1) f *= .8;
+      f *= 1 - .05 * Math.sin((x * .11) + Math.sin(y * .7 + row) * 2) * Math.sin(y * 1.3);
+    } else if (tex === "seramik") {
+      const t = S / 2, tx = Math.floor(x / t), ty = Math.floor(y / t);
+      f = .97 + hashN(tx, ty) * .06;
+      if (x % t < 1 || y % t < 1) f = .86;
+    } else if (tex === "beton") { f = .92 + r() * .12; if (r() < .004) f = .8; }
+    else if (tex === "cim") { f = .82 + r() * .3; }
+    else if (tex === "cakil") { f = .9 + r() * .14; }
+    else if (tex === "su") { f = 1; if (Math.abs(((y + Math.sin(x / S * 6.283) * S * .08) % (S / 3))) < 1.2) add = 28; }
+    else if (tex === "tarama") { f = 0; add = 255; }
+    set(x, y, f, add);
+  }
+  if (tex === "cakil") for (let n = 0; n < S * S / 30; n++) {
+    const cx = r() * w, cy = r() * h, rr = 1 + r() * S / 18, f = .78 + r() * .35;
+    for (let yy = -rr; yy <= rr; yy++) for (let xx = -rr; xx <= rr; xx++) if (xx * xx + yy * yy <= rr * rr) set(((Math.round(cx + xx) % w) + w) % w, ((Math.round(cy + yy) % h) + h) % h, f);
+  }
+  if (tex === "cim") for (let n = 0; n < S * S / 18; n++) {
+    let x = r() * w, y = r() * h; const f = .7 + r() * .15;
+    for (let k = 0; k < 4; k++) { set(((Math.round(x) % w) + w) % w, ((Math.round(y) % h) + h) % h, f); y -= 1; x += r() - .5; }
+  }
+  if (tex === "tarama") { const g = Math.max(3, Math.round(S / 6)); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if ((x + y) % g < 1.2) set(x, y, 1); }
+  return { w, h, d };
+}
+function dilate(src, w, h, r) {
+  if (r <= 0) return src.slice();
+  const tmp = new Uint8Array(w * h), out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) { let c = 0; const o = y * w;
+    for (let x = 0; x < Math.min(r, w); x++) c += src[o + x];
+    for (let x = 0; x < w; x++) { if (x + r < w) c += src[o + x + r]; if (x - r - 1 >= 0) c -= src[o + x - r - 1]; tmp[o + x] = c > 0 ? 1 : 0; } }
+  for (let x = 0; x < w; x++) { let c = 0;
+    for (let y = 0; y < Math.min(r, h); y++) c += tmp[y * w + x];
+    for (let y = 0; y < h; y++) { if (y + r < h) c += tmp[(y + r) * w + x]; if (y - r - 1 >= 0) c -= tmp[(y - r - 1) * w + x]; out[y * w + x] = c > 0 ? 1 : 0; } }
+  return out;
+}
+const CAP = 3200;
+async function openPainter(i) {
+  const s = sheet(), sl = s.slots[i];
+  if (!sl.img) return;
+  const baseRef = sl.paint?.base || sl.img;
+  let src = srcOf(baseRef); if (!src && baseRef.l) src = await loadLocal(baseRef.l);
+  if (!src) { toast("Plan görseli yüklenemedi."); return; }
+  ppRoot.hidden = false; ppRoot.innerHTML = `<div class="loading">Plan hazırlanıyor…</div>`;
+  try {
+    const im = await loadImgEl(src);
+    const sc = Math.min(1, CAP / Math.max(im.naturalWidth, im.naturalHeight));
+    const w = Math.round(im.naturalWidth * sc), h = Math.round(im.naturalHeight * sc);
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+    const cx = cv.getContext("2d", { willReadFrequently: true }); cx.fillStyle = "#fff"; cx.fillRect(0, 0, w, h); cx.drawImage(im, 0, 0, w, h);
+    const base = cx.getImageData(0, 0, w, h).data;
+    const lum = new Uint8Array(w * h);
+    for (let k = 0, j = 0; k < w * h; k++, j += 4) lum[k] = Math.min(base[j], base[j + 1], base[j + 2]);
+    const label = new Uint8Array(w * h);
+    if (sl.paint?.mask) {
+      let ms = srcOf(sl.paint.mask); if (!ms && sl.paint.mask.l) ms = await loadLocal(sl.paint.mask.l);
+      if (ms) { const mi = await loadImgEl(ms); const c2 = document.createElement("canvas"); c2.width = w; c2.height = h; const x2 = c2.getContext("2d", { willReadFrequently: true }); x2.imageSmoothingEnabled = false; x2.drawImage(mi, 0, 0, w, h); const md = x2.getImageData(0, 0, w, h).data; for (let k = 0; k < w * h; k++) label[k] = md[k * 4]; }
+    }
+    const pp = sl.paint || {};
+    Object.assign(PP, {
+      on: true, sheetId: s.id, slotI: i, w, h, base, lum, label, baseRef,
+      legend: pp.legend ? clone(pp.legend) : PRESETS.fonksiyon.map((x, k) => ({ id: k + 1, name: x[0], color: x[1], tex: x[2] })),
+      closures: pp.closures ? clone(pp.closures) : [], gap: pp.gap ?? 2, thr: pp.thr ?? 200, mono: pp.mono ?? true, texScale: pp.texScale ?? 1,
+      shadow: !!pp.shadow, poche: !!pp.poche, showOrig: false, style: pp.style || "renk", bgRef: pp.bg || null, bgData: null, dim: pp.dim ?? .7, fillOp: pp.fillOp ?? .22, lineHex: pp.lineHex || "#ffffff", tool: "fill", brush: Math.round(w / 80), hist: [], fut: [], dirty: false,
+      tmp: new Uint8Array(w * h), stack: new Int32Array(w * h), z: 1, vx: 0, vy: 0,
+    });
+    PP.active = PP.legend[0]?.id || 1;
+    PP.inkRGB = hex2rgb(pal(S.cur).ink);
+    PP.outImg = new ImageData(w, h);
+    if (PP.bgRef) await ppLoadBg(PP.bgRef);
+    ppRender(); ppWall(); ppTiles(); ppCompose(); ppFit(); ppOverlay();
+  } catch (e) { console.error(e); ppRoot.hidden = true; PP.on = false; toast("Plan açılamadı."); }
+}
+async function ppLoadBg(ref) {
+  let src = srcOf(ref); if (!src && ref.l) src = await loadLocal(ref.l);
+  if (!src) { PP.bgData = null; return; }
+  const im = await loadImgEl(src), c = document.createElement("canvas"); c.width = PP.w; c.height = PP.h;
+  const x = c.getContext("2d", { willReadFrequently: true });
+  const s = Math.max(PP.w / im.naturalWidth, PP.h / im.naturalHeight), dw = im.naturalWidth * s, dh = im.naturalHeight * s;
+  x.drawImage(im, (PP.w - dw) / 2, (PP.h - dh) / 2, dw, dh);
+  PP.bgData = x.getImageData(0, 0, PP.w, PP.h).data;
+}
+function ppWall() {
+  const { w, h, lum, thr } = PP, wall = new Uint8Array(w * h);
+  for (let k = 0; k < w * h; k++) wall[k] = lum[k] < thr ? 1 : 0;
+  PP.wall = wall; PP.clos = new Uint8Array(w * h);
+  for (const c of PP.closures) ppRaster(c);
+  ppBarrier();
+}
+function ppBarrier() { const { w, h } = PP, b = new Uint8Array(w * h); for (let k = 0; k < w * h; k++) b[k] = PP.wall[k] | PP.clos[k]; PP.solid = b; PP.bar = dilate(b, w, h, PP.gap); }
+function ppRaster([x1, y1, x2, y2]) {
+  const { w, h, clos } = PP, n = Math.ceil(Math.hypot(x2 - x1, y2 - y1)) + 1, t = Math.max(1, Math.round(w / 1600));
+  for (let k = 0; k <= n; k++) { const x = Math.round(x1 + (x2 - x1) * k / n), y = Math.round(y1 + (y2 - y1) * k / n);
+    for (let yy = -t; yy <= t; yy++) for (let xx = -t; xx <= t; xx++) { const X = x + xx, Y = y + yy; if (X >= 0 && Y >= 0 && X < w && Y < h) clos[Y * w + X] = 1; } }
+}
+function ppTiles() {
+  const S = PP.w / 45 * PP.texScale; PP.byId = {};
+  for (const it of PP.legend) PP.byId[it.id] = { rgb: hex2rgb(it.color), tile: it.tex && it.tex !== "duz" ? makeTile(it.tex, it.color, S) : null };
+}
+function ppCompose(x0 = 0, y0 = 0, x1 = PP.w, y1 = PP.h) {
+  x0 = Math.max(0, x0 | 0); y0 = Math.max(0, y0 | 0); x1 = Math.min(PP.w, Math.ceil(x1)); y1 = Math.min(PP.h, Math.ceil(y1));
+  if (x1 <= x0 || y1 <= y0) return;
+  const { w, base, lum, label, byId, wall } = PP, od = PP.outImg.data, orig = PP.showOrig, poche = PP.poche, thr = PP.thr, ink = PP.inkRGB, mono = PP.mono && !PP.showOrig;
+  const sd = PP.shadow ? Math.max(2, Math.round(w / 350)) : 0;
+  if (PP.style === "foto" && !orig) {
+    const bg = PP.bgData, dim = PP.dim, fo = PP.fillOp, L = hex2rgb(PP.lineHex);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+      const i = y * w + x, j = i * 4;
+      let r = bg ? bg[j] * dim : 42, g = bg ? bg[j + 1] * dim : 38, b = bg ? bg[j + 2] * dim : 35;
+      const k = label[i];
+      if (k && byId[k]) { const it = byId[k]; let cr, cg, cb; if (it.tile) { const t = it.tile, ti = ((y % t.h) * t.w + (x % t.w)) * 4; cr = t.d[ti]; cg = t.d[ti + 1]; cb = t.d[ti + 2]; } else [cr, cg, cb] = it.rgb; r = r * (1 - fo) + cr * fo; g = g * (1 - fo) + cg * fo; b = b * (1 - fo) + cb * fo; }
+      const a = (255 - lum[i]) / 255;
+      od[j] = r * (1 - a) + L[0] * a; od[j + 1] = g * (1 - a) + L[1] * a; od[j + 2] = b * (1 - a) + L[2] * a; od[j + 3] = 255;
+    }
+    const c = document.getElementById("ppout"); if (c) c.getContext("2d").putImageData(PP.outImg, 0, 0, x0, y0, x1 - x0, y1 - y0);
+    return;
+  }
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const i = y * w + x, j = i * 4; let r = 255, g = 255, b = 255;
+    const k = orig ? 0 : label[i];
+    if (k) { const it = byId[k];
+      if (it) {
+        if (it.tile) { const t = it.tile, ti = ((y % t.h) * t.w + (x % t.w)) * 4; r = t.d[ti]; g = t.d[ti + 1]; b = t.d[ti + 2]; } else { r = it.rgb[0]; g = it.rgb[1]; b = it.rgb[2]; }
+        if (sd) { let f = 1; for (let s = 1; s <= 4; s++) { const d = Math.round(sd * s / 4), X = x - d, Y = y - d; if (X >= 0 && Y >= 0 && wall[Y * w + X]) { f = .8 + .05 * (s - 1); break; } } r *= f; g *= f; b *= f; }
+      } }
+    if (poche && !orig && lum[i] < thr) { od[j] = ink[0]; od[j + 1] = ink[1]; od[j + 2] = ink[2]; }
+    else if (mono) { const v = lum[i] / 255; od[j] = r * v; od[j + 1] = g * v; od[j + 2] = b * v; }
+    else { od[j] = r * base[j] / 255; od[j + 1] = g * base[j + 1] / 255; od[j + 2] = b * base[j + 2] / 255; }
+    od[j + 3] = 255;
+  }
+  const c = document.getElementById("ppout"); if (c) c.getContext("2d").putImageData(PP.outImg, 0, 0, x0, y0, x1 - x0, y1 - y0);
+}
+function ppPush() { PP.hist.push({ label: PP.label.slice(), closures: clone(PP.closures) }); if (PP.hist.length > 12) PP.hist.shift(); PP.fut = []; PP.dirty = true; ppUndoBtns(); }
+function ppRestore(st) { PP.label = st.label; PP.closures = st.closures; PP.clos = new Uint8Array(PP.w * PP.h); for (const c of PP.closures) ppRaster(c); ppBarrier(); ppCompose(); ppOverlay(); ppUndoBtns(); }
+function ppUndo() { if (!PP.hist.length) return; PP.fut.push({ label: PP.label.slice(), closures: clone(PP.closures) }); ppRestore(PP.hist.pop()); }
+function ppRedo() { if (!PP.fut.length) return; PP.hist.push({ label: PP.label.slice(), closures: clone(PP.closures) }); ppRestore(PP.fut.pop()); }
+function ppUndoBtns() { const u = ppRoot.querySelector('[data-pp="undo"]'), r = ppRoot.querySelector('[data-pp="redo"]'); if (u) u.disabled = !PP.hist.length; if (r) r.disabled = !PP.fut.length; }
+function ppFill(sx, sy, k) {
+  const { w, h, bar, solid, label, tmp, stack } = PP;
+  let i0 = sy * w + sx;
+  if (solid[i0]) { toast("Çizginin üstüne tıkladın; odanın içine tıkla."); return; }
+  const useBar = !bar[i0]; const B = useBar ? bar : solid;
+  ppPush();
+  let sp = 0, n = 0, minx = sx, maxx = sx, miny = sy, maxy = sy;
+  stack[sp++] = i0; tmp[i0] = 1;
+  while (sp) {
+    const i = stack[--sp], x = i % w, y = (i - x) / w; n++;
+    if (x < minx) minx = x; if (x > maxx) maxx = x; if (y < miny) miny = y; if (y > maxy) maxy = y;
+    if (x > 0 && !tmp[i - 1] && !B[i - 1]) { tmp[i - 1] = 1; stack[sp++] = i - 1; }
+    if (x < w - 1 && !tmp[i + 1] && !B[i + 1]) { tmp[i + 1] = 1; stack[sp++] = i + 1; }
+    if (y > 0 && !tmp[i - w] && !B[i - w]) { tmp[i - w] = 1; stack[sp++] = i - w; }
+    if (y < h - 1 && !tmp[i + w] && !B[i + w]) { tmp[i + w] = 1; stack[sp++] = i + w; }
+  }
+  const g = useBar ? PP.gap + 1 : 1;
+  const ax = Math.max(0, minx - g), bx = Math.min(w - 1, maxx + g), ay = Math.max(0, miny - g), by = Math.min(h - 1, maxy + g);
+  for (let it = 1; it <= g; it++) {
+    for (let y = ay; y <= by; y++) for (let x = ax; x <= bx; x++) {
+      const i = y * w + x; if (tmp[i] || solid[i]) continue;
+      if ((x > 0 && tmp[i - 1] === it) || (x < w - 1 && tmp[i + 1] === it) || (y > 0 && tmp[i - w] === it) || (y < h - 1 && tmp[i + w] === it)) tmp[i] = it + 1;
+    }
+  }
+  for (let y = ay; y <= by; y++) for (let x = ax; x <= bx; x++) { const i = y * w + x; if (tmp[i]) { label[i] = k; tmp[i] = 0; } }
+  ppCompose(ax, ay, bx + 1, by + 1);
+  if (n > w * h * .55 && !PP.allowBig) { const st = PP.hist.pop(); PP.label = st.label; PP.closures = st.closures; ppCompose(ax, ay, bx + 1, by + 1); ppUndoBtns(); PP.allowBig = true; setTimeout(() => PP.allowBig = false, 6000);
+    toast("Alan kapalı değil, boya bütün plana yayıldı; geri aldım. Kapı boşluğunu Duvar kapat (D) ile çiz ya da Boşluk kapatma'yı artır. Bilerek yaptıysan aynı yere tekrar tıkla."); }
+}
+function ppDab(x, y, k) {
+  const { w, h, label } = PP, r = PP.brush / 2, r2 = r * r;
+  const x0 = Math.max(0, Math.floor(x - r)), x1 = Math.min(w - 1, Math.ceil(x + r)), y0 = Math.max(0, Math.floor(y - r)), y1 = Math.min(h - 1, Math.ceil(y + r));
+  for (let yy = y0; yy <= y1; yy++) for (let xx = x0; xx <= x1; xx++) if ((xx - x) ** 2 + (yy - y) ** 2 <= r2) label[yy * w + xx] = k;
+  ppCompose(x0, y0, x1 + 1, y1 + 1);
+}
+function ppFit() {
+  const v = document.getElementById("ppv"); if (!v) return;
+  const W = v.clientWidth - 40, H = v.clientHeight - 40;
+  PP.z = Math.min(W / PP.w, H / PP.h); PP.vx = (v.clientWidth - PP.w * PP.z) / 2; PP.vy = (v.clientHeight - PP.h * PP.z) / 2; ppView();
+}
+function ppView() { const c = document.getElementById("ppc"); if (c) c.style.transform = `translate(${PP.vx}px,${PP.vy}px) scale(${PP.z})`; const z = ppRoot.querySelector(".pp-zoom"); if (z) z.textContent = Math.round(PP.z * 100) + "%"; }
+function ppOverlay(tmpLine) {
+  const c = document.getElementById("ppov"); if (!c) return;
+  const x = c.getContext("2d"); x.clearRect(0, 0, c.width, c.height);
+  x.strokeStyle = "#a3201b"; x.lineWidth = Math.max(2, 2 / PP.z); x.setLineDash([6 / PP.z, 4 / PP.z]);
+  for (const [a, b, cc, d] of PP.closures.concat(tmpLine ? [tmpLine] : [])) { x.beginPath(); x.moveTo(a, b); x.lineTo(cc, d); x.stroke(); }
+}
+function ppPos(e) { const c = document.getElementById("ppout"), r = c.getBoundingClientRect(); return [Math.floor((e.clientX - r.left) / r.width * PP.w), Math.floor((e.clientY - r.top) / r.height * PP.h)]; }
+function swatchURL(it) {
+  const c = document.createElement("canvas"); c.width = 44; c.height = 44; const x = c.getContext("2d");
+  if (it.tex && it.tex !== "duz") { const t = makeTile(it.tex, it.color, 40); const id = new ImageData(t.d, t.w, t.h); const tc = document.createElement("canvas"); tc.width = t.w; tc.height = t.h; tc.getContext("2d").putImageData(id, 0, 0); x.drawImage(tc, 0, 0); }
+  else { x.fillStyle = it.color; x.fillRect(0, 0, 44, 44); }
+  return c.toDataURL();
+}
+function ppRender() {
+  const s = S.cur.sheets.find(x => x.id === PP.sheetId), sl = s.slots[PP.slotI];
+  const tool = (k, l, key) => `<button class="pt${PP.tool === k ? " on" : ""}" data-pp="tool" data-t="${k}">${l}<small>${key}</small></button>`;
+  ppRoot.innerHTML = `<header class="bar gut"><button class="btn" data-pp="close"><span class="r">←</span>Sunuma dön</button>
+    <div class="mid"><span class="t">Plan boya · ${esc(s.title)}${sl.cap ? " · " + esc(sl.cap) : ""}</span><span class="st hide-s">Kova ile odaya tıkla, kapı boşluklarını Duvar kapat ile kapat</span></div>
+    <div class="acts"><button class="btn m" data-pp="undo">Geri al</button><button class="btn m hide-s" data-pp="redo">Yinele</button><button class="btn u" data-pp="save">Sunuma ekle</button></div></header>
+  <div class="pp-body">
+    <aside class="pp-tools">
+      <div class="grp"><h4><span>Araç</span></h4><div class="ptools">${tool("fill", "Kova", "K")}${tool("brush", "Fırça", "B")}${tool("erase", "Silgi", "E")}${tool("close", "Duvar kapat", "D")}${tool("pan", "Kaydır", "Boşluk")}</div></div>
+      <div class="grp"><h4><span>Stil</span></h4>
+        <div class="seg"><button class="${PP.style === "renk" ? "on" : ""}" data-pp="style" data-t="renk">Renkli boyama</button><button class="${PP.style === "foto" ? "on" : ""}" data-pp="style" data-t="foto">Fotoğraf üstü</button></div>
+        ${PP.style === "foto" ? `<div class="sbtns"><button class="btn u" data-pp="bgpick">${PP.bgRef ? "Arka planı değiştir" : "Arka plan görseli seç"}</button>${PP.bgRef ? `<button class="btn m" data-pp="bgrm">Kaldır</button>` : ""}</div>
+        <p class="note">Render ya da fotoğraf seç; plan çizgileri üstünde ${esc(PP.lineHex) === "#ffffff" ? "beyaz" : "seçtiğin renkte"} görünür. Odaları kova ile boyarsan hafif bir dolgu alırlar.</p>
+        <div class="f"><label for="pp-dim">Arka plan parlaklığı · <b id="pp-dim-v">${Math.round(PP.dim * 100)}</b>%</label><input type="range" id="pp-dim" min="0.2" max="1" step="0.05" value="${PP.dim}"></div>
+        <div class="f"><label for="pp-fo">Oda dolgusu · <b id="pp-fo-v">${Math.round(PP.fillOp * 100)}</b>%</label><input type="range" id="pp-fo" min="0" max="0.9" step="0.02" value="${PP.fillOp}"></div>
+        <label class="chk"><input type="color" id="pp-line" value="${esc(PP.lineHex)}"> Çizgi rengi</label>
+        <input type="file" id="pp-bgfile" accept="image/*" hidden>` : ""}
+      </div>
+      <div class="grp"><h4><span>Ayarlar</span></h4>
+        <div class="f"><label for="pp-brush">Fırça boyutu · <b id="pp-brush-v">${PP.brush}</b> px</label><input type="range" id="pp-brush" min="2" max="${Math.round(PP.w / 8)}" value="${PP.brush}"></div>
+        <div class="f"><label for="pp-gap">Boşluk kapatma · <b id="pp-gap-v">${PP.gap}</b> px</label><input type="range" id="pp-gap" min="0" max="12" value="${PP.gap}"></div>
+        <div class="f"><label for="pp-thr">Çizgi eşiği · <b id="pp-thr-v">${PP.thr}</b></label><input type="range" id="pp-thr" min="60" max="235" value="${PP.thr}"></div>
+        <div class="f"><label for="pp-tex">Doku ölçeği · <b id="pp-tex-v">${PP.texScale}</b>×</label><input type="range" id="pp-tex" min="0.4" max="2.5" step="0.1" value="${PP.texScale}"></div>
+        <label class="chk"><input type="checkbox" id="pp-mono" ${PP.mono ? "checked" : ""}> Renkli CAD çizgilerini siyah yap</label>
+        <label class="chk"><input type="checkbox" id="pp-shadow" ${PP.shadow ? "checked" : ""}> Duvar gölgesi</label>
+        <label class="chk"><input type="checkbox" id="pp-poche" ${PP.poche ? "checked" : ""}> Çizgileri koyulaştır</label>
+        <label class="chk"><input type="checkbox" id="pp-orig" ${PP.showOrig ? "checked" : ""}> Orijinali göster</label>
+      </div>
+      <div class="grp"><h4><span>Görünüm</span><span class="pp-zoom"></span></h4><div class="sbtns"><button class="btn m" data-pp="fit">Sığdır</button><button class="btn m" data-pp="zin">Yakınlaş</button><button class="btn m" data-pp="zout">Uzaklaş</button></div>
+        <p class="note">Tekerlekle yakınlaş, Boşluk tuşunu basılı tutup sürükleyerek kaydır.</p></div>
+    </aside>
+    <div class="pp-view" id="ppv"><div class="pp-cv" id="ppc"><canvas id="ppout" width="${PP.w}" height="${PP.h}"></canvas><canvas id="ppov" width="${PP.w}" height="${PP.h}"></canvas></div></div>
+    <aside class="pp-leg" id="ppleg"></aside>
+  </div>`;
+  ppLegend(); ppUndoBtns(); ppCursor();
+}
+function ppLegend() {
+  const el = document.getElementById("ppleg"); if (!el) return;
+  const used = new Set(); const L = PP.label; for (let k = 0; k < L.length; k += 7) if (L[k]) used.add(L[k]);
+  el.innerHTML = `<div class="grp"><h4><span>Lejant</span><span>${PP.legend.length}</span></h4>
+    <div class="sbtns"><span class="note">Hazır palet ekle:</span><button class="btn m" data-pp="preset" data-t="fonksiyon">Fonksiyon</button><button class="btn m" data-pp="preset" data-t="malzeme">Malzeme</button></div>
+    <div>${PP.legend.map(it => `<div class="lgrow${it.id === PP.active ? " on" : ""}" data-pp="act" data-id="${it.id}">
+      <span class="lsw" style="background-image:url(${swatchURL(it)})"></span>
+      <div class="lf"><input id="lg-n-${it.id}" value="${esc(it.name)}" aria-label="Kalem adı">
+        <div class="lctl"><input type="color" id="lg-c-${it.id}" value="${esc(it.color)}" aria-label="Renk"><select id="lg-t-${it.id}" aria-label="Doku">${Object.entries(TEX).map(([k, v]) => `<option value="${k}" ${k === (it.tex || "duz") ? "selected" : ""}>${v}</option>`).join("")}</select>
+        ${used.has(it.id) ? `<span class="used">kullanılıyor</span>` : ""}<button class="btn m" data-pp="lgdel" data-id="${it.id}" aria-label="Kalemi sil">Sil</button></div></div></div>`).join("")}</div>
+    ${PP.legend.length < 30 ? `<button class="btn u" data-pp="lgadd"><span class="r">+</span>Kalem ekle</button>` : ""}
+    <p class="note">Seçili kalemle boyarsın. Kullanılan kalemler sunum sayfasına lejant olarak yazılır.</p></div>`;
+}
+function ppCursor() {
+  const v = document.getElementById("ppv"); if (!v) return;
+  v.dataset.tool = PP.tool;
+}
+async function ppSetBg(file) {
+  toast("Arka plan yükleniyor…");
+  try { const { blob, w, h } = await prep(file); const ref = await putImage(blob); ref.w = w; ref.h = h; PP.bgRef = ref; await ppLoadBg(ref); PP.dirty = true; ppRender(); ppCompose(); ppFit(); ppOverlay(); toast("Arka plan eklendi."); }
+  catch (e) { toast(e.message || "Arka plan yüklenemedi."); }
+}
+async function ppSave() {
+  if (PP.saving) return; PP.saving = true;
+  const btn = ppRoot.querySelector('[data-pp="save"]'); if (btn) btn.textContent = "Kaydediliyor…";
+  try {
+    const wasOrig = PP.showOrig; PP.showOrig = false; ppCompose(); PP.showOrig = wasOrig;
+    const oc = document.createElement("canvas"); oc.width = PP.w; oc.height = PP.h; oc.getContext("2d").putImageData(PP.outImg, 0, 0);
+    let blob = await new Promise(r => oc.toBlob(r, "image/png"));
+    if (blob.size > 19.5e6) blob = await new Promise(r => oc.toBlob(r, "image/jpeg", .93));
+    const mc = document.createElement("canvas"); mc.width = PP.w; mc.height = PP.h; const mx = mc.getContext("2d"); const md = new ImageData(PP.w, PP.h);
+    const counts = {};
+    for (let k = 0; k < PP.label.length; k++) { const v = PP.label[k]; md.data[k * 4] = v; md.data[k * 4 + 3] = 255; if (v) counts[v] = (counts[v] || 0) + 1; }
+    mx.putImageData(md, 0, 0);
+    const mblob = await new Promise(r => mc.toBlob(r, "image/png"));
+    const [cref, mref] = await Promise.all([putImage(blob), putImage(mblob)]);
+    cref.w = mref.w = PP.w; cref.h = mref.h = PP.h;
+    const used = PP.legend.filter(it => counts[it.id] > PP.w * PP.h * .0004).map(it => ({ name: it.name, color: it.color }));
+    const { sheetId, slotI } = PP;
+    const paint = { base: PP.baseRef, mask: mref, legend: PP.legend, closures: PP.closures, gap: PP.gap, thr: PP.thr, texScale: PP.texScale, shadow: PP.shadow, poche: PP.poche, mono: PP.mono, style: PP.style, bg: PP.bgRef, dim: PP.dim, fillOp: PP.fillOp, lineHex: PP.lineHex, used: PP.style === "foto" ? [] : used };
+    mutate(p => { const s = p.sheets.find(x => x.id === sheetId); if (!s) return; const sl = s.slots[slotI]; sl.img = cref; sl.paint = clone(paint); });
+    ppClose(true); toast("Boyalı plan sunuma eklendi.");
+    refresh(["stage", "list", "panel"]);
+  } catch (e) { console.error(e); toast(e.message || "Kaydedilemedi."); if (btn) btn.textContent = "Sunuma ekle"; }
+  PP.saving = false;
+}
+function ppClose(force) {
+  if (!force && PP.dirty && !PP.confirmClose) { PP.confirmClose = true; const b = ppRoot.querySelector('[data-pp="close"]'); if (b) b.innerHTML = `<span class="r">←</span>Kaydetmeden çık? Tekrar bas`; setTimeout(() => { PP.confirmClose = false; const b2 = ppRoot.querySelector('[data-pp="close"]'); if (b2) b2.innerHTML = `<span class="r">←</span>Sunuma dön`; }, 3500); return; }
+  PP.on = false; PP.confirmClose = false; ppRoot.hidden = true; ppRoot.innerHTML = "";
+  PP.bgData = PP.label = PP.tmp = PP.stack = PP.base = PP.lum = PP.wall = PP.clos = PP.bar = PP.solid = PP.outImg = null; PP.hist = []; PP.fut = [];
+}
+function ppSetActive(id) { PP.active = id; ppRoot.querySelectorAll(".lgrow").forEach(r => r.classList.toggle("on", +r.dataset.id === id)); }
+ppRoot.addEventListener("click", e => {
+  const b = e.target.closest("[data-pp]"); if (!b) return;
+  const a = b.dataset.pp;
+  if (a === "act") { if (e.target.closest("input,select,button")) { if (!e.target.closest('[data-pp="lgdel"]')) ppSetActive(+b.dataset.id); if (!e.target.closest("button")) return; } else { ppSetActive(+b.dataset.id); return; } }
+  switch (a) {
+    case "close": ppClose(false); break;
+    case "style": PP.style = b.dataset.t; PP.dirty = true; if (PP.style === "foto" && PP.legend.every(x => x.name !== "Oda dolgusu")) { const id = Math.max(0, ...PP.legend.map(x => x.id)) + 1; PP.legend.unshift({ id, name: "Oda dolgusu", color: "#ffffff", tex: "duz" }); PP.active = id; ppTiles(); }
+      ppRender(); ppCompose(); ppFit(); ppOverlay(); break;
+    case "bgpick": { const fi = document.getElementById("pp-bgfile"); fi.value = ""; fi.click(); break; }
+    case "bgrm": PP.bgRef = null; PP.bgData = null; PP.dirty = true; ppRender(); ppCompose(); ppFit(); ppOverlay(); break;
+    case "save": ppSave(); break;
+    case "undo": ppUndo(); break;
+    case "redo": ppRedo(); break;
+    case "tool": PP.tool = b.dataset.t; ppRoot.querySelectorAll(".pt").forEach(x => x.classList.toggle("on", x.dataset.t === PP.tool)); ppCursor(); break;
+    case "fit": ppFit(); break;
+    case "zin": case "zout": { const v = document.getElementById("ppv"); ppZoom(a === "zin" ? 1.25 : .8, v.clientWidth / 2, v.clientHeight / 2); break; }
+    case "preset": { const names = new Set(PP.legend.map(x => x.name)); let id = Math.max(0, ...PP.legend.map(x => x.id)); for (const [n, c, t] of PRESETS[b.dataset.t]) if (!names.has(n) && id < 250) PP.legend.push({ id: ++id, name: n, color: c, tex: t }); PP.dirty = true; ppTiles(); ppLegend(); break; }
+    case "lgadd": { const id = Math.max(0, ...PP.legend.map(x => x.id)) + 1; if (id > 250) break; PP.legend.push({ id, name: "Yeni kalem", color: "#d9cbb8", tex: "duz" }); PP.active = id; PP.dirty = true; ppTiles(); ppLegend(); break; }
+    case "lgdel": { const id = +b.dataset.id; ppPush(); const L = PP.label; for (let k = 0; k < L.length; k++) if (L[k] === id) L[k] = 0; PP.legend = PP.legend.filter(x => x.id !== id); if (PP.active === id) PP.active = PP.legend[0]?.id || 0; ppTiles(); ppCompose(); ppLegend(); break; }
+  }
+});
+ppRoot.addEventListener("input", e => {
+  const id = e.target.id; let m;
+  if (id === "pp-brush") { PP.brush = +e.target.value; document.getElementById("pp-brush-v").textContent = PP.brush; }
+  else if (id === "pp-gap") { PP.gap = +e.target.value; document.getElementById("pp-gap-v").textContent = PP.gap; }
+  else if (id === "pp-thr") { PP.thr = +e.target.value; document.getElementById("pp-thr-v").textContent = PP.thr; }
+  else if (id === "pp-tex") { PP.texScale = +e.target.value; document.getElementById("pp-tex-v").textContent = PP.texScale; }
+  else if (id === "pp-dim") { PP.dim = +e.target.value; document.getElementById("pp-dim-v").textContent = Math.round(PP.dim * 100); PP.dirty = true; ppCompose(); }
+  else if (id === "pp-fo") { PP.fillOp = +e.target.value; document.getElementById("pp-fo-v").textContent = Math.round(PP.fillOp * 100); PP.dirty = true; ppCompose(); }
+  else if (id === "pp-line") { PP.lineHex = e.target.value; PP.dirty = true; ppCompose(); }
+  else if ((m = id.match(/^lg-n-(\d+)$/))) { const it = PP.legend.find(x => x.id === +m[1]); if (it) { it.name = e.target.value; PP.dirty = true; } }
+});
+ppRoot.addEventListener("change", e => {
+  const id = e.target.id; let m;
+  if (id === "pp-bgfile") { const fl = e.target.files[0]; if (fl) ppSetBg(fl); return; }
+  if (id === "pp-gap") ppBarrier();
+  else if (id === "pp-thr") { ppWall(); ppCompose(); }
+  else if (id === "pp-tex") { ppTiles(); ppCompose(); }
+  else if (id === "pp-shadow") { PP.shadow = e.target.checked; ppCompose(); }
+  else if (id === "pp-mono") { PP.mono = e.target.checked; ppCompose(); }
+  else if (id === "pp-poche") { PP.poche = e.target.checked; ppCompose(); }
+  else if (id === "pp-orig") { PP.showOrig = e.target.checked; ppCompose(); }
+  else if ((m = id.match(/^lg-(c|t)-(\d+)$/))) { const it = PP.legend.find(x => x.id === +m[2]); if (it) { if (m[1] === "c") it.color = e.target.value; else it.tex = e.target.value; PP.dirty = true; ppTiles(); ppCompose(); ppLegend(); } }
+});
+function ppZoom(f, cx, cy) { const z = clamp(PP.z * f, .05, 8); PP.vx = cx - (cx - PP.vx) * z / PP.z; PP.vy = cy - (cy - PP.vy) * z / PP.z; PP.z = z; ppView(); ppOverlay(); }
+ppRoot.addEventListener("wheel", e => {
+  const v = e.target.closest("#ppv"); if (!v) return; e.preventDefault();
+  const r = v.getBoundingClientRect(); ppZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
+}, { passive: false });
+let ppSpace = false;
+ppRoot.addEventListener("pointerdown", e => {
+  const v = e.target.closest("#ppv"); if (!v || !PP.on || e.button > 1) return;
+  e.preventDefault(); v.setPointerCapture(e.pointerId);
+  const tool = (ppSpace || e.button === 1) ? "pan" : PP.tool;
+  const sx = e.clientX, sy = e.clientY, vx0 = PP.vx, vy0 = PP.vy; const [px, py] = ppPos(e);
+  let last = [px, py];
+  const inside = (x, y) => x >= 0 && y >= 0 && x < PP.w && y < PP.h;
+  if (tool === "fill") { if (inside(px, py)) { if (!PP.active) { toast("Önce lejanttan bir kalem seç."); return; } ppFill(px, py, PP.active); ppLegend(); } return; }
+  if (tool === "brush" || tool === "erase") { if (tool === "brush" && !PP.active) { toast("Önce lejanttan bir kalem seç."); return; } ppPush(); ppDab(px, py, tool === "erase" ? 0 : PP.active); }
+  const mv = ev => {
+    if (tool === "pan") { PP.vx = vx0 + ev.clientX - sx; PP.vy = vy0 + ev.clientY - sy; ppView(); return; }
+    const [x, y] = ppPos(ev);
+    if (tool === "close") { ppOverlay([px, py, x, y]); return; }
+    const d = Math.hypot(x - last[0], y - last[1]), st = Math.max(1, PP.brush / 4), n = Math.ceil(d / st);
+    for (let k = 1; k <= n; k++) ppDab(last[0] + (x - last[0]) * k / n, last[1] + (y - last[1]) * k / n, tool === "erase" ? 0 : PP.active);
+    last = [x, y];
+  };
+  const upH = ev => {
+    v.removeEventListener("pointermove", mv); v.removeEventListener("pointerup", upH); v.removeEventListener("pointercancel", upH);
+    if (tool === "close") { const [x, y] = ppPos(ev); if (Math.hypot(x - px, y - py) > 3) { ppPush(); const c = [px, py, x, y]; PP.closures.push(c); ppRaster(c); ppBarrier(); } ppOverlay(); }
+    if (tool === "brush" || tool === "erase") ppLegend();
+  };
+  v.addEventListener("pointermove", mv); v.addEventListener("pointerup", upH); v.addEventListener("pointercancel", upH);
+});
+document.addEventListener("keydown", e => {
+  if (!PP.on) return;
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName) && document.activeElement.type !== "range" && document.activeElement.type !== "checkbox";
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key.toLowerCase() === "z" && !typing) { e.preventDefault(); e.stopImmediatePropagation(); e.shiftKey ? ppRedo() : ppUndo(); return; }
+  if (typing) return;
+  if (e.code === "Space") { ppSpace = true; e.preventDefault(); const v = document.getElementById("ppv"); if (v) v.dataset.tool = "pan"; }
+  const map = { k: "fill", b: "brush", e: "erase", d: "close" }; const t = map[e.key.toLowerCase()];
+  if (t && !mod) { PP.tool = t; ppRoot.querySelectorAll(".pt").forEach(x => x.classList.toggle("on", x.dataset.t === t)); ppCursor(); }
+  e.stopImmediatePropagation();
+}, true);
+document.addEventListener("keyup", e => { if (PP.on && e.code === "Space") { ppSpace = false; ppCursor(); } });
+window.addEventListener("resize", () => { if (PP.on) ppFit(); });
+
+/* ---------------- Olaylar ---------------- */
+app.addEventListener("submit", e => { if (e.target.id === "nf") createProject(e); });
+app.addEventListener("click", async e => {
+  const b = e.target.closest("[data-act]");
+  const act = b && b.dataset.act;
+  if (S.expOpen && act !== "exp" && !e.target.closest(".menu")) { S.expOpen = false; const m = app.querySelector(".menu"); if (m) m.hidden = true; }
+  if (act !== "del" && act !== "delsheet" && S.confirm) { S.confirm = null; if (S.view === "home") renderHome(); else refresh(["list"]); }
+  if (!b) {
+    const hit = e.target.closest(".hit[data-slot]");
+    if (hit && S.view === "editor") {
+      if (hit._dragged) { hit._dragged = false; return; }
+      const i = +hit.dataset.slot; S.sel = i;
+      if (!sheet().slots[i].img) pick(i);
+      refresh(["stage", "panel"]);
+    }
+    return;
+  }
+  const i = b.dataset.i != null ? +b.dataset.i : null;
+  switch (act) {
+    case "newopen": S.newOpen = true; renderHome(); break;
+    case "newclose": S.newOpen = false; renderHome(); break;
+    case "dup": { const p = Store.projects.find(x => x.id === b.dataset.id); if (!p) break; const c = clone(p); c.id = uid(); c.title = p.title + " (kopya)"; c.created = c.updated = Date.now(); c.sheets.forEach(s => s.id = uid()); try { await savePj(c); if (!Store.projects.find(x => x.id === c.id)) Store.projects.push(c); renderHome(); toast("Sunum çoğaltıldı."); } catch { toast("Çoğaltılamadı."); } break; }
+    case "del": { const id = b.dataset.id; if (S.confirm === "del:" + id) { S.confirm = null; try { await delPj(id); Store.projects = Store.projects.filter(x => x.id !== id); toast("Sunum silindi."); } catch { toast("Silinemedi."); } } else S.confirm = "del:" + id; renderHome(); break; }
+    case "open": nav(b.dataset.id); break;
+    case "home": if (S.saveT) await flush(); nav(null); break;
+    case "undo": undo(); break;
+    case "redo": redo(); break;
+    case "save": await flush(); break;
+    case "exp": S.expOpen = !S.expOpen; app.querySelector(".menu").hidden = !S.expOpen; break;
+    case "png": case "jpg": S.expOpen = false; app.querySelector(".menu").hidden = true; exportPNG(act === "jpg"); break;
+    case "pdf": S.expOpen = false; app.querySelector(".menu").hidden = true; exportPDF(); break;
+    case "go": S.si = i; S.sel = null; S.addOpen = false; refresh(["stage", "list", "panel"]); break;
+    case "mv": { const d = +b.dataset.d, j = S.si + d; mutate(p => { const [x] = p.sheets.splice(S.si, 1); p.sheets.splice(j, 0, x); }); S.si = j; refresh(["stage", "list", "panel"]); break; }
+    case "dupsheet": mutate(p => { const c = clone(p.sheets[S.si]); c.id = uid(); p.sheets.splice(S.si + 1, 0, c); }); S.si++; refresh(["stage", "list", "panel"]); break;
+    case "delsheet": { const s = sheet(); if (S.confirm === "sheet:" + s.id) { S.confirm = null; mutate(p => p.sheets.splice(S.si, 1)); S.si = Math.min(S.si, S.cur.sheets.length - 1); S.sel = null; toast("Sayfa silindi. Geri al ile geri getirebilirsin."); refresh(["stage", "list", "panel"]); } else { S.confirm = "sheet:" + s.id; refresh(["list"]); } break; }
+    case "addtoggle": S.addOpen = !S.addOpen; refresh(["list"]); break;
+    case "add": { const t = b.dataset.t; mutate(p => p.sheets.splice(S.si + 1, 0, mk(t, TPL[t].name))); S.si++; S.addOpen = false; S.sel = null; S.tab = "sheet"; refresh(["stage", "list", "panel"]); break; }
+    case "tab": S.tab = b.dataset.t; refresh(["panel"]); break;
+    case "tpl": mutate(p => { const s = p.sheets[S.si]; s.tpl = b.dataset.t; ensure(s); }); S.sel = null; refresh(["stage", "list", "panel"]); break;
+    case "theme": mutate(p => p.theme = b.dataset.t); refresh(["stage", "list", "panel"]); break;
+    case "pick": S.sel = i; pick(i); break;
+    case "fit": mutate(p => { const sl = p.sheets[S.si].slots[i]; sl.fit = sl.fit === "cover" ? "contain" : "cover"; }); refresh(["stage", "list", "panel"]); break;
+    case "rm": mutate(p => { const sl = p.sheets[S.si].slots[i]; sl.img = null; delete sl.paint; }); refresh(["stage", "list", "panel"]); break;
+    case "paint": S.sel = i; openPainter(i); break;
+    case "planpaint": {
+      const s = sheet(), n = TPL[s.tpl].n;
+      if (!n) { toast("Bu sayfada görsel çerçevesi yok. Plan sayfalarından birine geç (ör. Plan + lejant)."); break; }
+      let k = S.sel != null && s.slots[S.sel]?.img ? S.sel : -1;
+      if (k < 0) for (let j = 0; j < n; j++) if (s.slots[j].img) { k = j; break; }
+      if (k < 0) { toast("Önce bu sayfaya planını yükle; yüklenince Plan boya ile açılır."); S.afterUploadPaint = true; pick(0); break; }
+      S.sel = k; openPainter(k); break;
+    }
+    case "unpaint": mutate(p => { const sl = p.sheets[S.si].slots[i]; if (sl.paint) { sl.img = sl.paint.base; sl.fit = "contain"; delete sl.paint; } }); toast("Boyama kaldırıldı; orijinal plan geri geldi."); refresh(["stage", "list", "panel"]); break;
+    case "stepadd": mutate(p => p.sheets[S.si].steps.push({ t: "Yeni adım", d: "", x: "" })); refresh(["stage", "list", "panel"]); break;
+    case "steprm": mutate(p => p.sheets[S.si].steps.splice(i, 1)); refresh(["stage", "list", "panel"]); break;
+    case "coladd": mutate(p => p.sheets[S.si].colors.push("#c9c3b8")); refresh(["stage", "list", "panel"]); break;
+    case "colrm": mutate(p => p.sheets[S.si].colors.pop()); refresh(["stage", "list", "panel"]); break;
+  }
+});
+app.addEventListener("input", e => {
+  if (S.view !== "editor") return;
+  const id = e.target.id; if (!id) return;
+  let m;
+  const key = "in:" + S.si + ":" + id;
+  if ((m = id.match(/^f-(title|scale|big|notes|notesTitle)$/))) mutate(p => p.sheets[S.si][m[1]] = e.target.value, key);
+  else if ((m = id.match(/^(cap|txt)-(\d+)$/))) mutate(p => p.sheets[S.si].slots[+m[2]][m[1]] = e.target.value, key);
+  else if ((m = id.match(/^st-(t|d|x)-(\d+)$/))) mutate(p => p.sheets[S.si].steps[+m[2]][m[1]] = e.target.value, key);
+  else if ((m = id.match(/^col-(\d+)$/))) mutate(p => p.sheets[S.si].colors[+m[1]] = e.target.value, key);
+  else if ((m = id.match(/^p-(title|sub|author|date)$/))) { mutate(p => p[m[1]] = e.target.value, key); if (m[1] === "title") { const t = app.querySelector(".bar .mid .t"); if (t) t.textContent = e.target.value; } }
+  else return;
+  refresh(["stage", "list"]);
+});
+app.addEventListener("change", e => {
+  if (S.view !== "editor") return;
+  if (e.target.id === "f-north") { mutate(p => p.sheets[S.si].north = e.target.checked); refresh(["stage", "list"]); }
+  if (e.target.id === "p-format") { mutate(p => p.format = e.target.value); refresh(["stage", "list", "panel"]); }
+  if (/^col-\d+$/.test(e.target.id)) refresh(["panel"]);
+});
+/* Kadraj kaydırma */
+app.addEventListener("pointerdown", e => {
+  const hit = e.target.closest(".hit.full.pan");
+  if (!hit || e.button !== 0 || e.target.closest(".tools")) return;
+  const i = +hit.dataset.slot, s = sheet(), sl = s.slots[i]; if (!sl.img || !sl.img.w) return;
+  const W = hit.clientWidth, H = hit.clientHeight, sc = Math.max(W / sl.img.w, H / sl.img.h);
+  const ox = sl.img.w * sc - W, oy = sl.img.h * sc - H;
+  const sx = e.clientX, sy = e.clientY, p0 = { ...sl.pos }; let moved = false, cur = p0;
+  const svgImg = hit.parentElement.querySelectorAll("image");
+  const B = build(S.cur, S.si); const opIdx = B.ops.filter(o => o.k === "img" && srcOf(o.ref)).findIndex(o => o.i === i);
+  const imgEl = svgImg[opIdx];
+  hit.setPointerCapture(e.pointerId);
+  const mv = ev => {
+    const dx = ev.clientX - sx, dy = ev.clientY - sy;
+    if (!moved && Math.hypot(dx, dy) < 4) return; moved = true;
+    cur = { x: ox > 0 ? clamp(p0.x - dx / ox * 100) : p0.x, y: oy > 0 ? clamp(p0.y - dy / oy * 100) : p0.y };
+    const op = B.ops.filter(o => o.k === "img" && srcOf(o.ref))[opIdx];
+    if (imgEl && op) { const r = place({ ...op, pos: cur }); imgEl.setAttribute("x", r.x); imgEl.setAttribute("y", r.y); }
+  };
+  const upH = () => {
+    hit.removeEventListener("pointermove", mv); hit.removeEventListener("pointerup", upH); hit.removeEventListener("pointercancel", upH);
+    if (moved) { hit._dragged = true; mutate(p => p.sheets[S.si].slots[i].pos = cur); refresh(["stage", "list"]); }
+  };
+  hit.addEventListener("pointermove", mv); hit.addEventListener("pointerup", upH); hit.addEventListener("pointercancel", upH);
+});
+/* Sürükle bırak */
+const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes("Files");
+window.addEventListener("dragover", e => {
+  if (!hasFiles(e)) return; e.preventDefault();
+  app.querySelectorAll(".hit.drop").forEach(h => h.classList.remove("drop"));
+  const hit = e.target.closest && e.target.closest(".hit[data-slot]"); if (hit) hit.classList.add("drop");
+});
+window.addEventListener("dragleave", e => { if (!e.relatedTarget) app.querySelectorAll(".hit.drop").forEach(h => h.classList.remove("drop")); });
+window.addEventListener("drop", e => {
+  if (!hasFiles(e)) return; e.preventDefault();
+  app.querySelectorAll(".hit.drop").forEach(h => h.classList.remove("drop"));
+  if (S.view !== "editor") return;
+  const files = [...e.dataTransfer.files];
+  const hit = e.target.closest && e.target.closest(".hit[data-slot]");
+  const row = e.target.closest && e.target.closest(".slotrow");
+  let i = hit ? +hit.dataset.slot : null;
+  if (row) { const b = row.querySelector("[data-i]"); if (b) i = +b.dataset.i; }
+  uploadInto(files, i);
+});
+document.addEventListener("paste", e => {
+  if (S.view !== "editor" || PP.on) return;
+  const files = [...(e.clipboardData?.files || [])].filter(isImg);
+  if (!files.length) return;
+  e.preventDefault(); uploadInto(files, S.sel);
+});
+document.addEventListener("keydown", e => {
+  if (S.view !== "editor" || PP.on) return;
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); flush(); return; }
+  if (typing) return;
+  if (mod && e.key.toLowerCase() === "z") { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  else if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redo(); }
+  else if (e.key === "PageDown" || e.key === "ArrowDown" && e.altKey) { if (S.si < S.cur.sheets.length - 1) { S.si++; S.sel = null; refresh(["stage", "list", "panel"]); } }
+  else if (e.key === "PageUp" || e.key === "ArrowUp" && e.altKey) { if (S.si > 0) { S.si--; S.sel = null; refresh(["stage", "list", "panel"]); } }
+});
+window.addEventListener("pagehide", () => { if (S.saveT) flush(); });
+
+function nav(id) {
+  try { history.replaceState(null, "", id ? "#p-" + id : location.pathname + location.search); } catch {}
+  if (id) openProject(id); else { S.cur = null; renderHome(); }
+}
+function route() {
+  const m = location.hash.match(/^#p-([a-z0-9]+)$/);
+  if (m) openProject(m[1]);
+  else { if (S.cur && S.saveT) flush(); S.cur = null; renderHome(); }
+}
+window.addEventListener("hashchange", () => safe(route));
+
+function safe(fn) {
+  try { fn(); } catch (e) {
+    console.error(e);
+    app.innerHTML = `<div class="loading" style="text-align:center;line-height:1.7">Sayfa açılırken bir hata oluştu.<br><span style="color:var(--ink)">${esc(e && e.message || e)}</span><br><button class="btn u" onclick="location.reload()">Yeniden dene</button></div>`;
+  }
+}
+/* ---------------- Portfolyo örneği: hazır sunum + kendi kendine tur ---------------- */
+const DEMO = "demoazurea";
+async function seedDemo() {
+  const I = (n, h = 1279) => ({ u: `../assets/proje9/${n}.jpg`, w: 2000, h });
+  const put = (s, ...refs) => { refs.forEach((r, k) => { if (s.slots[k]) s.slots[k].img = r; }); return s; };
+  const sheets = [
+    put(mk("kapak", "Kapak"), I("03")),
+    put(mk("icindekiler", "İçindekiler"), I("01"), I("05")),
+    put(mk("metin", "Proje hakkında", { notes: "Eğimli arazide kademelenerek yükselen, akışkan beyaz saçaklarla tanımlanan teraslı bir konut yapısı.\n\nHer katta denize bakan geniş teraslar, havuz bahçesi ve yeşille iç içe bir zemin kat. Kütle, topografyayı izleyerek basamaklanıyor; saçaklar hem gölge hem de yatay bir ritim kuruyor." }), I("06")),
+    put(mk("iki", "Kütle ve yerleşim", { caps: ["Kuşbakışı", "Havuz bahçesi"] }), I("01"), I("02")),
+    put(mk("render3", "Renderlar", { caps: ["Ana cephe", "Teraslar", "Deniz manzarası"] }), I("04"), I("05"), I("06")),
+    put(mk("malzeme", "Malzeme ve renk", { caps: ["Cephe", "Teras", "Peyzaj"], notes: "Beyaz akışkan saçaklar, ahşap teras döşemesi ve yerel bitki örtüsü; denize açılan sakin bir palet." }), I("05"), I("06"), I("02")),
+    put(mk("rendertam", "Atmosfer", { caps: ["Kuşadası · Aydın"] }), I("03")),
+    mk("zaman", "Proje takvimi"),
+    put(mk("tesekkur", "Teşekkürler"), I("04")),
+  ];
+  sheets[5].colors = ["#f2efe9", "#d9cbb8", "#8a9a83", "#3f6f8c", "#1d1c1a"];
+  const p = { id: DEMO, title: "Azurea", sub: "Teraslı konut · Kuşadası", author: "Esma Dado", date: today(), format: "W169", theme: "kagit", created: Date.now(), updated: Date.now(), sheets };
+  try { await savePj(p); } catch { const i = Store.projects.findIndex(x => x.id === DEMO); if (i >= 0) Store.projects[i] = p; else Store.projects.push(p); }
+}
+function demoTour() {
+  const hint = document.createElement("div");
+  hint.className = "demo-hint";
+  hint.innerHTML = `<b>Kendin dene</b> · Sayfalara tıkla, sağdan yerleşimi ya da temayı değiştir, bir görseli çerçeveye sürükle.`;
+  document.body.appendChild(hint);
+  const themes = Object.keys(THEMES); let tk = 0, stop = false;
+  const end = () => { if (stop) return; stop = true; clearInterval(timer); hint.classList.add("off"); setTimeout(() => hint.remove(), 6000); };
+  ["pointerdown", "keydown", "wheel", "dragenter"].forEach(ev => addEventListener(ev, end, { once: true, capture: true }));
+  const timer = setInterval(() => {
+    if (stop || S.view !== "editor" || !S.cur) return;
+    const n = S.cur.sheets.length;
+    S.si = (S.si + 1) % n; S.sel = null;
+    if (S.si === 0) { tk = (tk + 1) % themes.length; S.cur.theme = themes[tk]; }
+    refresh(["stage", "list", "panel"]);
+    const on = document.querySelector(".li.on"); if (on) on.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, 2600);
+}
+(async () => {
+  try { await Promise.all([fontsReady(), initStore()]); } catch (e) { console.error(e); }
+  try { await seedDemo(); } catch (e) { console.error(e); }
+  S.started = true;
+  if (!/^#p-/.test(location.hash)) { nav(DEMO); demoTour(); }
+  else safe(route);
+})();
+})();
+</script>
+
+</body></html>

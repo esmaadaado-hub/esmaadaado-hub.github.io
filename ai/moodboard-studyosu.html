@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moodboard Stüdyosu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter+Tight:wght@300;400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --paper: #f4f2ee; --ink: #1d1c1a; --red: #a3201b; --muted: #84837f; --line: #d2d0cc; --soft: #ebe8e3; --white: #fbfaf8;
+  --font: "Inter Tight", "Helvetica Neue", Arial, sans-serif; --display: "Cormorant Garamond", Garamond, "Times New Roman", serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 400 13px/1.5 var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
+button, input { font: inherit; color: inherit; }
+.app { height: 100%; display: grid; grid-template-rows: 52px minmax(0, 1fr); }
+
+/* Üst çubuk */
+.top { display: flex; align-items: center; gap: 24px; padding: 0 22px; border-bottom: 1px solid var(--line); background: var(--paper); }
+.logo { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 21px; letter-spacing: .14em; }
+.logo i { display: grid; grid-template-columns: 7px 7px; gap: 2px; }
+.logo i b { width: 7px; height: 7px; background: var(--ink); }
+.logo i b:nth-child(2) { background: var(--red); }
+.crumb { color: var(--muted); font-size: 12.5px; }
+.crumb b { color: var(--ink); font-weight: 500; }
+.sp { flex: 1; }
+.btn { background: none; border: 0; padding: 6px 0; cursor: pointer; white-space: nowrap; transition: color .2s; font-size: 12.5px; }
+.btn:hover { color: var(--red); }
+.btn.dark { background: var(--ink); color: var(--paper); padding: 8px 14px; }
+.btn.dark:hover { background: var(--red); color: var(--paper); }
+.btn .r { color: var(--red); margin-right: 6px; }
+.btn.dark .r { color: #e7b3ae; }
+
+.main { display: grid; grid-template-columns: 290px minmax(0, 1fr) 270px; min-height: 0; }
+.col { overflow: auto; min-height: 0; }
+.left { border-right: 1px solid var(--line); padding: 18px 18px 40px; }
+.right { border-left: 1px solid var(--line); padding: 18px 18px 40px; }
+.h { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; display: flex; justify-content: space-between; }
+.h span { color: var(--red); letter-spacing: 0; }
+.sec + .sec { margin-top: 24px; }
+
+/* Kaynak render */
+.src { position: relative; aspect-ratio: 4 / 3; background: var(--soft); overflow: hidden; }
+.src img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.src .tag { position: absolute; left: 8px; bottom: 8px; background: rgba(29,28,26,.78); color: var(--paper); font-size: 11px; padding: 3px 8px; }
+.scan { position: absolute; inset: 0; pointer-events: none; }
+.scan::before { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: var(--red); box-shadow: 0 0 18px 4px rgba(163,32,27,.45); top: -4px; opacity: 0; }
+.scan.on::before { animation: sweep 1.3s cubic-bezier(.5,0,.4,1) forwards; }
+@keyframes sweep { 0% { top: -4px; opacity: 1; } 92% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+.mark { position: absolute; width: 14px; height: 14px; border: 1.5px solid #fff; border-radius: 50%; transform: translate(-50%, -50%) scale(0); box-shadow: 0 0 0 1px rgba(0,0,0,.25); transition: transform .35s; }
+.mark.on { transform: translate(-50%, -50%) scale(1); }
+.thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+.thumbs button { padding: 0; border: 1px solid transparent; background: none; cursor: pointer; aspect-ratio: 1; overflow: hidden; }
+.thumbs button img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.9); }
+.thumbs button.on { border-color: var(--red); outline: 1px solid var(--red); }
+.row { display: flex; gap: 18px; margin-top: 10px; }
+
+/* Malzeme kartları */
+.mats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mat { background: var(--white); border: 1px solid var(--line); padding: 0; cursor: pointer; text-align: left; opacity: 0; transform: translateY(6px); transition: opacity .4s, transform .4s, border-color .2s; }
+.mat.in { opacity: 1; transform: none; }
+.mat.off { opacity: .42; }
+.mat .sw { aspect-ratio: 4 / 3; background-size: cover; background-position: center; display: block; position: relative; }
+.mat .sw em { position: absolute; right: 5px; top: 5px; font-style: normal; font-size: 10px; background: rgba(251,250,248,.9); padding: 1px 6px; }
+.mat .nm { display: block; padding: 6px 8px 7px; font-size: 11.5px; line-height: 1.3; }
+.mat .nm small { display: block; color: var(--muted); font-size: 10.5px; }
+.mat:hover { border-color: var(--ink); }
+
+/* Orta */
+.center { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; }
+.tabs { display: flex; gap: 6px; padding: 14px 22px 0; }
+.tabs button { background: none; border: 1px solid var(--line); padding: 6px 12px; cursor: pointer; font-size: 12px; color: var(--muted); transition: all .2s; }
+.tabs button.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.stage { display: grid; place-items: center; padding: 18px 22px; min-height: 0; container-type: size; }
+.board { width: min(100cqw, 100cqh * 1.5); aspect-ratio: 3 / 2; background: var(--white); box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 18px 40px -18px rgba(0,0,0,.25); position: relative; overflow: hidden; container-type: inline-size; }
+.note { padding: 0 22px 16px; color: var(--muted); font-size: 12px; }
+
+/* Kolaj */
+.kolaj { position: absolute; inset: 3.2cqw; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr); gap: 1.1cqw; }
+.t { position: relative; background-size: cover; background-position: center; background-color: var(--soft); opacity: 0; transform: scale(.96); transition: opacity .5s, transform .5s; cursor: grab; }
+.t.in { opacity: 1; transform: none; }
+.t.drag { opacity: .35; }
+.t.over { outline: 2px solid var(--red); outline-offset: 2px; }
+.t .lb { position: absolute; left: .6cqw; bottom: .6cqw; font-size: max(9px, .8cqw); background: rgba(251,250,248,.92); padding: .15cqw .6cqw; pointer-events: none; }
+.ta { grid-area: 1 / 1 / 4 / 4; }
+.tb { grid-area: 1 / 4 / 2 / 5; } .tc { grid-area: 2 / 4 / 3 / 5; } .td { grid-area: 3 / 4 / 5 / 5; }
+.te { grid-area: 4 / 1 / 5 / 2; } .tf { grid-area: 4 / 2 / 5 / 3; } .tg { grid-area: 4 / 3 / 5 / 4; }
+.title { grid-area: 1 / 5 / 3 / 7; display: flex; flex-direction: column; justify-content: center; padding-left: 1cqw; }
+.title h1 { margin: 0; font-family: var(--display); font-weight: 300; font-size: 4.2cqw; line-height: .95; letter-spacing: .1em; text-transform: uppercase; outline: none; }
+.title h1:focus { box-shadow: 0 1px 0 var(--red); }
+.title p { margin: 1.2cqw 0 0; font-size: max(9px, .85cqw); color: var(--muted); }
+.palet { grid-area: 3 / 5 / 5 / 7; display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; gap: .5cqw; padding-left: 1cqw; }
+.palet div { display: grid; gap: .5cqw; opacity: 0; transform: translateY(8px); transition: opacity .4s, transform .4s; }
+.palet div.in { opacity: 1; transform: none; }
+.palet i { display: block; aspect-ratio: 1 / 2.4; }
+.palet small { font-size: max(8px, .72cqw); color: var(--muted); letter-spacing: .04em; }
+
+/* Malzeme panosu */
+.pano { position: absolute; inset: 3.2cqw; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 2cqw; }
+.pano header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--ink); padding-bottom: 1cqw; }
+.pano header h2 { margin: 0; font-family: var(--display); font-weight: 300; font-size: 2.6cqw; letter-spacing: .12em; text-transform: uppercase; }
+.pano header span { font-size: max(9px, .85cqw); color: var(--muted); }
+.pgrid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 1.6cqw; min-height: 0; }
+.pc { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: .7cqw; opacity: 0; transform: translateY(8px); transition: opacity .4s, transform .4s; }
+.pc.in { opacity: 1; transform: none; }
+.pc i { display: block; background-size: cover; background-position: center; border-radius: 50%; aspect-ratio: 1; height: 100%; max-width: 100%; justify-self: center; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+.pc div { font-size: max(9px, .85cqw); display: flex; gap: .8cqw; align-items: baseline; justify-content: center; }
+.pc b { color: var(--red); font-weight: 400; }
+.pc small { color: var(--muted); }
+
+/* Palet & doku */
+.doku { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); }
+.band { display: flex; flex-direction: column; justify-content: flex-end; padding: 2cqw 1.6cqw; transform-origin: bottom; transform: scaleY(0); transition: transform .6s cubic-bezier(.3,.7,.2,1); }
+.band.in { transform: none; }
+.band b { font-weight: 400; font-size: max(10px, 1.1cqw); letter-spacing: .08em; }
+.band small { font-size: max(8px, .78cqw); opacity: .75; }
+.band span { font-family: var(--display); font-size: 2.6cqw; font-weight: 300; line-height: 1; margin-bottom: .8cqw; }
+
+/* Sağ panel */
+.sws { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.sws button { aspect-ratio: 1; border: 1px solid var(--line); cursor: pointer; padding: 0; transition: transform .2s; }
+.sws button:hover { transform: scale(1.06); }
+.sws button.on { outline: 2px solid var(--ink); outline-offset: 2px; }
+.hex { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 10px 12px; background: var(--white); border: 1px solid var(--line); }
+.hex small { color: var(--muted); display: block; font-size: 10.5px; }
+.hex i { width: 30px; height: 30px; display: block; }
+.list { display: grid; }
+.li { display: grid; grid-template-columns: 22px 24px 1fr; gap: 8px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); font-size: 12px; cursor: pointer; }
+.li:hover span { color: var(--red); }
+.li.off { opacity: .4; }
+.li b { color: var(--muted); font-weight: 400; font-size: 10.5px; }
+.li i { width: 24px; height: 24px; background-size: cover; background-position: center; display: block; }
+.mood { font-size: 12px; color: var(--muted); }
+.mood b { display: block; font-family: var(--display); font-size: 22px; font-weight: 400; color: var(--ink); line-height: 1.1; margin-bottom: 6px; }
+
+.hint { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 11px 18px; font-size: 13px; z-index: 60; white-space: nowrap; transition: opacity .6s 3s, transform .6s 3s; pointer-events: none; }
+.hint b { font-weight: 500; color: #e7b3ae; }
+.hint.off { opacity: 0; transform: translate(-50%, 10px); }
+.toast { position: fixed; left: 50%; top: 64px; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 9px 14px; font-size: 12.5px; z-index: 70; }
+.toast[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo"><i><b></b><b></b><b></b><b></b></i>MOOD STÜDYO</div>
+    <div class="crumb" id="crumb"></div>
+    <div class="sp"></div>
+    <button class="btn" id="again"><span class="r">↻</span>Yeniden çıkar</button>
+    <button class="btn dark" id="png"><span class="r">↓</span>PNG indir</button>
+  </header>
+  <div class="main">
+    <aside class="col left">
+      <div class="sec">
+        <p class="h">Kaynak render <span id="srcno"></span></p>
+        <div class="src" id="src"><img id="srcimg" alt=""><div class="scan" id="scan"></div><span class="tag" id="srctag"></span></div>
+        <div class="thumbs" id="thumbs"></div>
+        <div class="row"><button class="btn" id="up"><span class="r">+</span>Kendi renderını yükle</button></div>
+        <input type="file" id="file" accept="image/*" hidden>
+      </div>
+      <div class="sec">
+        <p class="h">Render'dan çıkan malzemeler <span id="matno"></span></p>
+        <div class="mats" id="mats"></div>
+      </div>
+    </aside>
+    <section class="center">
+      <nav class="tabs" id="tabs">
+        <button data-t="kolaj" class="on">Kolaj</button>
+        <button data-t="pano">Malzeme panosu</button>
+        <button data-t="doku">Palet &amp; doku</button>
+      </nav>
+      <div class="stage"><div class="board" id="board"></div></div>
+      <p class="note" id="note"></p>
+    </section>
+    <aside class="col right">
+      <div class="sec">
+        <p class="h">Renk paleti <span>5</span></p>
+        <div class="sws" id="sws"></div>
+        <div class="hex" id="hex"></div>
+      </div>
+      <div class="sec">
+        <p class="h">Atmosfer</p>
+        <div class="mood" id="mood"></div>
+      </div>
+      <div class="sec">
+        <p class="h">Panodaki malzemeler <span id="useno"></span></p>
+        <div class="list" id="list"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+"use strict";
+const RENDERS = [
+  { u: "../assets/proje6/03.jpg", n: "Yemek alanı" },
+  { u: "../assets/proje6/10.jpg", n: "Oturma alanı" },
+  { u: "../assets/proje6/08.jpg", n: "Mutfak" },
+  { u: "../assets/proje6/06.jpg", n: "Havuz" },
+  { u: "../assets/proje6/01.jpg", n: "Salon" },
+  { u: "../assets/proje6/04.jpg", n: "Giriş holü" },
+  { u: "../assets/proje5/04.jpg", n: "Villa cephesi" },
+  { u: "../assets/proje7/02.jpg", n: "Konut cephesi" },
+];
+// Malzeme sözlüğü: renk + doku yoğunluğuna göre en yakın ad
+const LIB = [
+  ["Açık meşe kaplama", [200, 168, 130], 1], ["Ceviz ahşap", [110, 76, 54], 1], ["Bal rengi ahşap", [170, 120, 70], 1],
+  ["Traverten", [214, 202, 182], 1], ["Kireç sıva", [236, 230, 220], 0], ["Beyaz mermer", [232, 230, 226], 1],
+  ["Bej boya", [205, 186, 160], 0], ["Keten kumaş", [216, 207, 194], 1], ["Bukle döşeme", [226, 220, 210], 1],
+  ["Pirinç detay", [176, 141, 87], 0], ["Antrasit metal", [62, 62, 62], 0], ["Siyah çelik", [30, 30, 30], 0],
+  ["Kahve deri", [122, 80, 56], 0], ["Taş kaplama", [163, 155, 143], 1], ["Brüt beton", [158, 154, 148], 1],
+  ["Bitki örtüsü", [96, 112, 76], 1], ["Gökyüzü / cam", [170, 190, 205], 0], ["Havuz suyu", [120, 180, 195], 0],
+  ["Gri seramik", [190, 188, 184], 1], ["Sıcak LED ışık", [240, 215, 170], 0], ["Terrakota", [176, 108, 74], 1],
+];
+const $ = id => document.getElementById(id);
+const hex = c => "#" + c.map(v => Math.round(v).toString(16).padStart(2, "0")).join("").toUpperCase();
+const lum = c => (.2126 * c[0] + .7152 * c[1] + .0722 * c[2]) / 255;
+const d2 = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const St = { ri: 0, src: null, img: null, mats: [], pal: [], tab: "kolaj", order: [], off: new Set(), title: "", run: 0, user: false, selC: 0 };
+
+function load(src) { return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; }); }
+
+/* ---- Analiz ---- */
+function analyse(im) {
+  const W = 240, H = Math.round(W * im.naturalHeight / im.naturalWidth);
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(im, 0, 0, W, H);
+  const D = x.getImageData(0, 0, W, H).data;
+  // Palet: basit k-means (k=5)
+  const px = [];
+  for (let i = 0; i < D.length; i += 4 * 7) px.push([D[i], D[i + 1], D[i + 2]]);
+  let cen = [0, .25, .5, .75, .99].map(f => px.slice().sort((a, b) => lum(a) - lum(b))[Math.floor(f * (px.length - 1))].slice());
+  for (let it = 0; it < 10; it++) {
+    const s = cen.map(() => [0, 0, 0, 0]);
+    for (const p of px) { let bi = 0, bd = 1e9; cen.forEach((c2, k) => { const d = d2(p, c2); if (d < bd) { bd = d; bi = k; } }); const t = s[bi]; t[0] += p[0]; t[1] += p[1]; t[2] += p[2]; t[3]++; }
+    cen = s.map((t, k) => t[3] ? [t[0] / t[3], t[1] / t[3], t[2] / t[3]] : cen[k]);
+  }
+  const pal = cen.sort((a, b) => lum(b) - lum(a));
+  // Malzeme adayları: hücre ızgarası, ortalama renk + doku (sapma)
+  const GX = 7, GY = 5, cells = [];
+  for (let gy = 0; gy < GY; gy++) for (let gx = 0; gx < GX; gx++) {
+    const x0 = Math.floor(gx * W / GX), x1 = Math.floor((gx + 1) * W / GX), y0 = Math.floor(gy * H / GY), y1 = Math.floor((gy + 1) * H / GY);
+    let r = 0, g = 0, b = 0, n = 0; const ls = [];
+    for (let y = y0; y < y1; y += 2) for (let xx = x0; xx < x1; xx += 2) { const i = (y * W + xx) * 4; r += D[i]; g += D[i + 1]; b += D[i + 2]; n++; ls.push(lum([D[i], D[i + 1], D[i + 2]])); }
+    const avg = [r / n, g / n, b / n], m = ls.reduce((a, v) => a + v, 0) / ls.length, sd = Math.sqrt(ls.reduce((a, v) => a + (v - m) ** 2, 0) / ls.length);
+    if (sd > .2) continue; // çok karışık (birden fazla nesne) hücreleri atla
+    cells.push({ cx: (x0 + x1) / 2 / W, cy: (y0 + y1) / 2 / H, avg, sd });
+  }
+  // Renkçe birbirinden en uzak 8 hücre (en dokulu olandan başla)
+  const pick = [];
+  const pool = cells.slice().sort((a, b) => b.sd - a.sd);
+  if (pool.length) pick.push(pool.shift());
+  while (pick.length < 8 && pool.length) {
+    let bi = 0, bd = -1;
+    pool.forEach((c2, k) => { const d = Math.min(...pick.map(p => d2(p.avg, c2.avg))) * (1 + c2.sd * 2); if (d > bd) { bd = d; bi = k; } });
+    pick.push(pool.splice(bi, 1)[0]);
+  }
+  // Ad ver, kırpıntı üret
+  const used = new Map();
+  const mats = pick.map((c2, k) => {
+    let best = LIB[0], bd = 1e12;
+    for (const L of LIB) { const d = d2(L[1], c2.avg) * (L[2] && c2.sd < .04 ? 1.6 : 1) * (!L[2] && c2.sd > .09 ? 1.6 : 1); if (d < bd) { bd = d; best = L; } }
+    let name = best[0]; const u = (used.get(name) || 0) + 1; used.set(name, u); if (u > 1) name += " " + u;
+    return { id: "M" + String(k + 1).padStart(2, "0"), name, avg: c2.avg, cx: c2.cx, cy: c2.cy, crop: cropURL(im, c2.cx, c2.cy) };
+  });
+  return { pal, mats };
+}
+function cropURL(im, cx, cy) {
+  const W = im.naturalWidth, H = im.naturalHeight, s = Math.min(W, H) * .13;
+  const x = Math.max(0, Math.min(W - s, cx * W - s / 2)), y = Math.max(0, Math.min(H - s, cy * H - s / 2));
+  const c = document.createElement("canvas"); c.width = c.height = 320;
+  c.getContext("2d").drawImage(im, x, y, s, s, 0, 0, 320, 320);
+  return c.toDataURL("image/jpeg", .86);
+}
+function moodOf(pal) {
+  const avg = pal.reduce((a, c) => [a[0] + c[0] / 5, a[1] + c[1] / 5, a[2] + c[2] / 5], [0, 0, 0]);
+  const L = lum(avg), warm = avg[0] - avg[2], green = avg[1] - (avg[0] + avg[2]) / 2;
+  if (green > 8) return ["Doğayla iç içe", "Yeşil dokular ve doğal yüzeyler; yapı peyzajla birlikte okunuyor."];
+  if (L > .62 && warm > 12) return ["Sıcak minimal", "Açık zemin, bal tonlu ahşap ve yumuşak ışık; sakin ve sıcak bir iç mekân."];
+  if (L > .62) return ["Yumuşak beyaz", "Beyaz ve gri tonlar, ferah yüzeyler; ışığı öne çıkaran sade bir palet."];
+  if (warm > 14) return ["Toprak tonları", "Kahve, bej ve terrakota; dokulu, kökleri olan bir atmosfer."];
+  if (avg[2] > avg[0]) return ["Serin sükûnet", "Mavi ve gri ağırlıklı, su ve gökyüzüyle konuşan dingin bir palet."];
+  return ["Koyu doku", "Koyu yüzeyler ve güçlü kontrast; ağırbaşlı, katmanlı bir dil."];
+}
+
+/* ---- Çizim ---- */
+const LET = ["tb", "tc", "td", "te", "tf", "tg"];
+function active() { return St.order.map(i => St.mats[i]).filter(m => m && !St.off.has(m.id)); }
+function renderBoard(animate = true) {
+  const B = $("board"), ms = active(), R = RENDERS[St.ri] || { n: "Kendi renderın" };
+  if (St.tab === "kolaj") {
+    B.innerHTML = `<div class="kolaj">
+      <div class="t ta" style="background-image:url('${St.src}')" data-k="-1"><span class="lb">${esc(R.n)}</span></div>
+      ${LET.map((cl, k) => { const m = ms[k]; return m ? `<div class="t ${cl}" draggable="true" data-id="${m.id}" style="background-image:url(${m.crop})"><span class="lb">${m.id} · ${esc(m.name)}</span></div>` : `<div class="t ${cl}" style="background:${hex(St.pal[k % 5])}"></div>`; }).join("")}
+      <div class="title"><h1 contenteditable="true" spellcheck="false" id="ttl">${esc(St.title)}</h1><p>${esc(R.n)} · Esma Dado · ${ms.length} malzeme</p></div>
+      <div class="palet">${St.pal.map(c => `<div><i style="background:${hex(c)}"></i><small>${hex(c)}</small></div>`).join("")}</div>
+    </div>`;
+    stagger(B.querySelectorAll(".t, .palet div"), animate ? 70 : 0);
+    bindDrag();
+    $("note").textContent = "Malzeme karelerini sürükleyip yer değiştir, başlığa tıklayıp yeniden yaz. Soldaki kartlarla malzemeyi panodan çıkar ya da geri ekle.";
+  } else if (St.tab === "pano") {
+    B.innerHTML = `<div class="pano"><header><h2>Malzeme panosu</h2><span>${esc(St.title)} · ${esc(R.n)}</span></header>
+      <div class="pgrid">${ms.slice(0, 8).map(m => `<div class="pc"><i style="background-image:url(${m.crop})"></i><div><b>${m.id}</b><span>${esc(m.name)}</span><small>${hex(m.avg)}</small></div></div>`).join("")}</div></div>`;
+    stagger(B.querySelectorAll(".pc"), animate ? 80 : 0);
+    $("note").textContent = "Her malzeme renderdaki gerçek yüzeyinden kırpıldı; kod ve ortalama rengiyle listelenir.";
+  } else {
+    B.innerHTML = `<div class="doku">${St.pal.map((c, k) => { const dark = lum(c) < .5; return `<div class="band" style="background:${hex(c)};color:${dark ? "#f4f2ee" : "#1d1c1a"}"><span>0${k + 1}</span><b>${hex(c)}</b><small>RGB ${c.map(Math.round).join(" · ")}</small></div>`; }).join("")}</div>`;
+    stagger(B.querySelectorAll(".band"), animate ? 90 : 0);
+    $("note").textContent = "Paletteki beş renk renderın piksellerinden kümeleme ile hesaplandı; açıktan koyuya sıralı.";
+  }
+  const t = $("ttl"); if (t) t.addEventListener("input", () => { St.title = t.textContent.trim(); });
+}
+function stagger(els, step) { els.forEach((e, k) => step ? setTimeout(() => e.classList.add("in"), 60 + k * step) : e.classList.add("in")); }
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function renderSide(animate) {
+  $("mats").innerHTML = St.mats.map(m => `<button class="mat${St.off.has(m.id) ? " off" : ""}" data-id="${m.id}" title="Panoya ekle / çıkar"><span class="sw" style="background-image:url(${m.crop})"><em>${St.off.has(m.id) ? "Kapalı" : "Panoda"}</em></span><span class="nm">${esc(m.name)}<small>${m.id} · ${hex(m.avg)}</small></span></button>`).join("");
+  stagger($("mats").querySelectorAll(".mat"), animate ? 110 : 0);
+  $("matno").textContent = St.mats.length;
+  $("sws").innerHTML = St.pal.map((c, k) => `<button style="background:${hex(c)}" data-c="${k}" class="${k === St.selC ? "on" : ""}" aria-label="${hex(c)}"></button>`).join("");
+  showHex();
+  const [mt, md] = moodOf(St.pal);
+  $("mood").innerHTML = `<b>${mt}</b>${md}`;
+  const ms = St.order.map(i => St.mats[i]);
+  $("list").innerHTML = ms.map(m => `<div class="li${St.off.has(m.id) ? " off" : ""}" data-id="${m.id}"><b>${m.id}</b><i style="background-image:url(${m.crop})"></i><span>${esc(m.name)}</span></div>`).join("");
+  $("useno").textContent = active().length;
+  $("thumbs").innerHTML = RENDERS.map((r, k) => `<button data-r="${k}" class="${k === St.ri ? "on" : ""}" title="${esc(r.n)}"><img src="${r.u}" alt="${esc(r.n)}" loading="lazy"></button>`).join("");
+  $("srcno").textContent = St.ri >= 0 ? String(St.ri + 1).padStart(2, "0") + "/" + String(RENDERS.length).padStart(2, "0") : "Yüklenen";
+  $("crumb").innerHTML = `Salon ${String(Math.max(0, St.ri) + 1).padStart(2, "0")} — <b>${esc((RENDERS[St.ri] || { n: "Kendi renderın" }).n)}</b>`;
+}
+function showHex() { const c = St.pal[St.selC] || St.pal[0]; if (!c) return; $("hex").innerHTML = `<div><small>Seçili renk</small>${hex(c)}</div><i style="background:${hex(c)}"></i>`; }
+
+/* ---- Çıkarım akışı ---- */
+async function extract(src, ri, label) {
+  const run = ++St.run;
+  St.ri = ri; St.src = src;
+  $("srcimg").src = src; $("srctag").textContent = label;
+  let im; try { im = await load(src); } catch { toast("Görsel açılamadı."); return; }
+  if (run !== St.run) return;
+  St.img = im;
+  const { pal, mats } = analyse(im);
+  St.pal = pal; St.mats = mats; St.order = mats.map((_, k) => k); St.off = new Set(); St.selC = 0;
+  St.title = moodOf(pal)[0];
+  // tarama animasyonu + işaretler
+  const sc = $("scan"); sc.innerHTML = ""; sc.classList.remove("on"); void sc.offsetWidth; sc.classList.add("on");
+  mats.forEach((m, k) => { const d = document.createElement("span"); d.className = "mark"; d.style.left = m.cx * 100 + "%"; d.style.top = m.cy * 100 + "%"; sc.appendChild(d); setTimeout(() => d.classList.add("on"), 250 + k * 120); });
+  renderSide(true);
+  await sleep(500); if (run !== St.run) return;
+  renderBoard(true);
+}
+
+/* ---- Olaylar ---- */
+document.addEventListener("click", e => {
+  const r = e.target.closest("[data-r]"); if (r) { const k = +r.dataset.r; extract(RENDERS[k].u, k, RENDERS[k].n); return; }
+  const t = e.target.closest("#tabs button"); if (t) { setTab(t.dataset.t); return; }
+  const m = e.target.closest(".mat, .li"); if (m) { const id = m.dataset.id; St.off.has(id) ? St.off.delete(id) : St.off.add(id); renderSide(false); renderBoard(false); return; }
+  const c = e.target.closest("[data-c]"); if (c) { St.selC = +c.dataset.c; $("sws").querySelectorAll("button").forEach((b, k) => b.classList.toggle("on", k === St.selC)); showHex(); return; }
+});
+function setTab(t) { St.tab = t; $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t)); renderBoard(true); }
+$("again").onclick = () => { if (St.src) extract(St.src, St.ri, $("srctag").textContent); };
+$("up").onclick = () => { $("file").value = ""; $("file").click(); };
+$("file").onchange = () => { const f = $("file").files[0]; if (!f) return; extract(URL.createObjectURL(f), -1, f.name.replace(/\.[^.]+$/, "")); };
+function bindDrag() {
+  let from = null;
+  $("board").querySelectorAll(".t[data-id]").forEach(el => {
+    el.addEventListener("dragstart", e => { from = el.dataset.id; el.classList.add("drag"); e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", from); } catch {} });
+    el.addEventListener("dragend", () => el.classList.remove("drag"));
+    el.addEventListener("dragover", e => { if (from) { e.preventDefault(); el.classList.add("over"); } });
+    el.addEventListener("dragleave", () => el.classList.remove("over"));
+    el.addEventListener("drop", e => {
+      e.preventDefault(); el.classList.remove("over");
+      const to = el.dataset.id; if (!from || from === to) return;
+      const a = St.mats.findIndex(m => m.id === from), b = St.mats.findIndex(m => m.id === to);
+      const ia = St.order.indexOf(a), ib = St.order.indexOf(b); [St.order[ia], St.order[ib]] = [St.order[ib], St.order[ia]];
+      from = null; renderBoard(false); renderSide(false);
+    });
+  });
+}
+$("png").onclick = async () => {
+  if (!window.html2canvas) { toast("PNG aracı yüklenemedi."); return; }
+  toast("PNG hazırlanıyor…");
+  try {
+    const B = $("board"), cv = await html2canvas(B, { scale: 2400 / B.clientWidth, backgroundColor: null, useCORS: true });
+    cv.toBlob(b => { const a = document.createElement("a"), u = URL.createObjectURL(b); a.href = u; a.download = "moodboard-" + St.tab + ".png"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); toast("PNG indiriliyor."); }, "image/png");
+  } catch { toast("PNG oluşturulamadı."); }
+};
+let tT; function toast(m) { const t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(tT); tT = setTimeout(() => t.hidden = true, 2600); }
+
+/* ---- Kendi kendine tur (kullanıcı dokunana kadar) ---- */
+function tour() {
+  const hint = document.createElement("div"); hint.className = "hint";
+  hint.innerHTML = `<b>Kendin dene</b> · Soldan bir render seç ya da kendi renderını yükle; malzemeler ve palet anında çıkar.`;
+  document.body.appendChild(hint);
+  const tabs = ["kolaj", "pano", "doku"]; let step = 0;
+  const end = () => { if (St.user) return; St.user = true; clearInterval(tm); hint.classList.add("off"); setTimeout(() => hint.remove(), 6000); };
+  ["pointerdown", "keydown", "wheel", "dragenter"].forEach(ev => addEventListener(ev, end, { once: true, capture: true }));
+  const tm = setInterval(() => {
+    if (St.user) return;
+    step++;
+    if (step % 3 === 0) { const k = (St.ri + 1) % RENDERS.length; St.tab = "kolaj"; $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === "kolaj")); extract(RENDERS[k].u, k, RENDERS[k].n); }
+    else setTab(tabs[step % 3]);
+  }, 3400);
+}
+(async () => {
+  try { await document.fonts.ready; } catch {}
+  await extract(RENDERS[0].u, 0, RENDERS[0].n);
+  tour();
+})();
+})();
+</script>
+</body>
+</html>
