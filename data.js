@@ -66,6 +66,41 @@ const SITE = {
     { ad: "Magnific", not: { tr: "Render iyileştirme ve detay artırma", en: "Render enhancement and upscaling" } },
   ],
 
+  // ---- Yapay zekâ bölümünün girişi: ofisteki deneyim (kartlardan önce okunur) ----
+  aiGiris: {
+    baslik: {
+      tr: "Ofisteki işlerin yapay zekâya geçişini içeriden yaşadım.",
+      en: "I lived the office's shift to AI from the inside.",
+    },
+    metin: {
+      tr: "Çalıştığım mimarlık ofisinde kullandığımız ana yazılımların geliştirilmesinde aktif rol aldım. Bugün ofisteki işlerin büyük kısmı yapay zekâ destekli süreçlerle yürüyor; bu dönüşümü hem kuran hem de her gün projelerde kullanan ekibin içindeydim. Aşağıdaki araçlar bu deneyimden doğdu.",
+      en: "At the architecture office where I work, I took an active role in developing the main software we use. Today most of the office's work runs through AI-assisted processes, and I was part of the team that both built this shift and uses it on projects every day. The tools below grew out of that experience.",
+    },
+    maddeler: [
+      {
+        baslik: { tr: "Ofis yazılımlarının geliştirilmesi", en: "Building the office's software" },
+        aciklama: {
+          tr: "Ofisin ana iş araçlarının ihtiyaçlarının belirlenmesinden günlük kullanıma geçişine kadar sürecin içinde yer aldım.",
+          en: "Involved from defining what the office's main tools needed to do through to putting them into daily use.",
+        },
+      },
+      {
+        baslik: { tr: "İş akışlarının yapay zekâya taşınması", en: "Moving workflows onto AI" },
+        aciklama: {
+          tr: "Sunum, görselleştirme, proje metinleri ve yazışma gibi günlük işlerin çoğu yapay zekâ destekli süreçlere dahil edildi.",
+          en: "Most everyday work — presentations, visualization, project texts and correspondence — was brought into AI-assisted processes.",
+        },
+      },
+      {
+        baslik: { tr: "Gerçek projelerde deneyim", en: "Hands-on, on real projects" },
+        aciklama: {
+          tr: "Bu araçları her gün gerçek projelerde kullanarak nerede hız kazandırdığını, nerede mimarın gözünün şart olduğunu deneyimledim.",
+          en: "Using these tools daily on real projects taught me where they save time and where an architect's eye is still essential.",
+        },
+      },
+    ],
+  },
+
   // ---- Yapay zekâ ile yapılan işler (Projeler'in altında ayrı bölüm) ----
   // gorsel: "assets/ai/01.jpg" — boşsa kırmızı bir alan görünür
   // onizleme: tıklanınca kendi kendine oynayan, etkileşimi kapalı canlı önizleme

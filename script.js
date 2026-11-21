@@ -224,6 +224,13 @@
         ${(S.aiIsler || []).length ? `<section class="sec grid" id="yapay-zeka">
           <h2 class="sec-head"><span>${num("yapay-zeka")}</span>${esc(L.aiWork)}</h2>
           <div class="sec-body">
+            ${S.aiGiris ? `<div class="ai-intro">
+              <p class="lead">${esc(t(S.aiGiris.baslik))}</p>
+              <p class="para">${esc(t(S.aiGiris.metin))}</p>
+              ${(S.aiGiris.maddeler || []).length ? `<div class="focus ai-points">${S.aiGiris.maddeler
+                .map((o, i) => `<div><span class="red">${nn(i + 1)}</span><h3>${esc(t(o.baslik))}</h3><p>${esc(t(o.aciklama))}</p></div>`)
+                .join("")}</div>` : ""}
+            </div>` : ""}
             <div class="works ai-works">${S.aiIsler
               .map((p, i) => {
                 const tag = (p.onizleme || p.onizlemeGorsel) || p.link ? "a" : "article";
