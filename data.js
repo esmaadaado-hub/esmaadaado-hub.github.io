@@ -129,17 +129,6 @@ const SITE = {
       link: "",
     },
     {
-      baslik: { tr: "Aurel — Diyagram Videosu", en: "Aurel — Diagram Film" },
-      arac: "Claude",
-      aciklama: {
-        tr: "Aynı villanın 53 saniyelik mimari diyagram filmi: katların oluşumu, mahaller ve alanları, gün boyunca güneş ve gölge, kesitlerde mobilya yerleşimi. Sosyal medya için 4:5 formatında.",
-        en: "A 53-second architectural diagram film of the same villa: floors assembling, rooms and their areas, sun and shadow through the day, and furniture layouts in section. Made in 4:5 for social media.",
-      },
-      gorsel: "assets/ai/aurel-diyagram.jpg",
-      onizleme: "ai/aurel-diyagram.html",
-      link: "",
-    },
-    {
       baslik: { tr: "Şantiye Eskiz Stüdyosu", en: "Site Sketch Studio" },
       arac: "Claude",
       aciklama: {
