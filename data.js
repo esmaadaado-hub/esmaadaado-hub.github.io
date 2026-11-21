@@ -73,8 +73,8 @@ const SITE = {
       en: "I lived the office's shift to AI from the inside.",
     },
     metin: {
-      tr: "Çalıştığım mimarlık ofisinde kullandığımız ana yazılımların geliştirilmesinde aktif rol aldım. Bugün ofisteki işlerin büyük kısmı yapay zekâ destekli süreçlerle yürüyor; bu dönüşümü hem kuran hem de her gün projelerde kullanan ekibin içindeydim. Aşağıdaki araçlar bu deneyimden doğdu.",
-      en: "At the architecture office where I work, I took an active role in developing the main software we use. Today most of the office's work runs through AI-assisted processes, and I was part of the team that both built this shift and uses it on projects every day. The tools below grew out of that experience.",
+      tr: "Çalıştığım mimarlık ofisinde kullandığımız ana yazılımların geliştirilmesinde aktif rol aldım. Bugün ofisteki işlerin büyük kısmı yapay zekâ destekli süreçlerle yürüyor; bu dönüşümü hem kuran hem de her gün projelerde kullanan ekibin içindeydim. Aşağıdaki araçlar ise ofisin değil, tamamen bana ait: bu deneyimden öğrendiklerimle kendi çalışma sistemim için kurduğum araçlar.",
+      en: "At the architecture office where I work, I took an active role in developing the main software we use. Today most of the office's work runs through AI-assisted processes, and I was part of the team that both built this shift and uses it on projects every day. The tools below, however, are entirely my own, not the office's: tools I built for my own workflow, drawing on what that experience taught me.",
     },
     maddeler: [
       {
@@ -94,8 +94,8 @@ const SITE = {
       {
         baslik: { tr: "Gerçek projelerde deneyim", en: "Hands-on, on real projects" },
         aciklama: {
-          tr: "Bu araçları her gün gerçek projelerde kullanarak nerede hız kazandırdığını, nerede mimarın gözünün şart olduğunu deneyimledim.",
-          en: "Using these tools daily on real projects taught me where they save time and where an architect's eye is still essential.",
+          tr: "Yapay zekâyı her gün gerçek projelerde kullanarak nerede hız kazandırdığını, nerede mimarın gözünün şart olduğunu deneyimledim.",
+          en: "Using AI daily on real projects taught me where they save time and where an architect's eye is still essential.",
         },
       },
     ],
