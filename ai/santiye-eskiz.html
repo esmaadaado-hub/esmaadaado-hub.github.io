@@ -510,7 +510,8 @@ function shrink(img,max){const s=Math.min(1,max/Math.max(img.width,img.height));
 function setThumb(id,url,tag){const el=$(id);el.classList.add('has');el.querySelector('div').innerHTML=`<img src="${url}" alt=""><span class="tag">${tag} · değiştir</span>`}
 $('#fPhoto').onchange=e=>loadFile(e.target.files[0],(img,url)=>{S.photo=shrink(img,2600);setThumb('#upPhoto',url,'Şantiye');
  if(S.fmt==='orig')setFmt('orig');maybeReprep();updEmpty();draw();e.target.value=''});
-$('#fRender').onchange=e=>loadFile(e.target.files[0],(img,url)=>{S.render=img;setThumb('#upRender',url,'Render');LW=0;prepRender();updEmpty();e.target.value=''});
+$('#fRender').onchange=e=>loadFile(e.target.files[0],(img,url)=>{PRESETS.sketch.edge.thick=0;PRESETS.ghost.edge.thick=0;S.edge.thick=0;S.look.glow=.15;PRESETS.sketch.look.glow=.15;PRESETS.ghost.look.glow=.2;syncSliders();
+  S.render=img;setThumb('#upRender',url,'Render');LW=0;prepRender();updEmpty();e.target.value=''});
 function updEmpty(){const el=$('#empty');el.style.display=S.photo&&S.render?'none':'grid';
  el.querySelector('div').innerHTML=!S.photo&&!S.render?'<b>Şantiye + render → eskiz</b>Önce şantiye fotoğrafını, sonra aynı açıdaki render\'ı yükle.':!S.photo?'<b>Şimdi şantiye fotoğrafı</b>Render hazır, zemin fotoğrafını ekle.':'<b>Şimdi render</b>Fotoğraf hazır, aynı açıdaki render\'ı ekle.'}
 
@@ -550,13 +551,14 @@ renderNotes();updInfo();setFmt('story');
   const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const x=c.getContext('2d');
   x.filter='grayscale(1) brightness(.5) contrast(1.15)';x.drawImage(img,0,0);
   S.photo=shrink(c,2600);setThumb('#upPhoto',c.toDataURL('image/jpeg',.6),'Örnek zemin');
+  PRESETS.sketch.edge.thick=0;PRESETS.ghost.edge.thick=0;S.edge.thick=0;S.look.glow=.15;PRESETS.sketch.look.glow=.15;PRESETS.ghost.look.glow=.2;syncSliders();
   S.render=img;setThumb('#upRender',img.src,'Örnek render');
   setFmt('wide');LW=0;prepRender();updEmpty();
   S.notes.push({id:nid++,text:'Cephe ritmi',x:.24,y:.2,tx:.4,ty:.34,cx:.3,cy:.32,arrow:true},
                {id:nid++,text:'Geniş cam yüzey',x:.78,y:.84,tx:.64,ty:.62,cx:.76,cy:.7,arrow:true});
   renderNotes();draw();
-  const order=['ghost','bold','sketch'];let i=0;
-  (function cycle(){setTimeout(()=>{if(stop)return;const b=document.querySelector(`#presets .chip[data-p="${order[i++%3]}"]`);b&&b.click();cycle()},3200)})();
+  const order=['ghost','sketch'];let i=0;
+  (function cycle(){setTimeout(()=>{if(stop)return;const b=document.querySelector(`#presets .chip[data-p="${order[i++%2]}"]`);b&&b.click();cycle()},3200)})();
  };
  img.src='../assets/proje5/01.jpg';
 })();
