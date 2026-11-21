@@ -166,7 +166,7 @@
             <ul class="table">${rows(S.deneyim)}</ul>
             <p class="label">${esc(L.education)}</p>
             <ul class="table">${rows(S.egitim)}</ul>
-            ${(S.sertifikalar || []).length ? `<p class="label">${esc(L.certs)}</p><ul class="table certs">${S.sertifikalar.map((c) => `<li><span class="muted">${esc(t(c.tarih))}</span><span><span class="t">${esc(t(c.baslik))}</span><br><span class="muted">${esc(t(c.kurum))}</span></span><a class="cert" href="${esc(c.gorsel)}" target="_blank" rel="noopener"><img src="${esc(c.gorsel)}" alt="${esc(t(c.baslik))}" loading="lazy"><span>${esc(L.viewCert)}</span></a></li>`).join("")}</ul>` : ""}
+            ${(S.sertifikalar || []).length ? `<p class="label">${esc(L.certs)}</p><ul class="table certs">${S.sertifikalar.map((c) => `<li><span class="muted">${esc(t(c.tarih))}</span><span><span class="t">${esc(t(c.baslik))}</span><br><span class="muted">${esc(t(c.kurum))}</span></span><a class="cert" href="${esc(c.link || c.gorsel)}" target="_blank" rel="noopener"><img src="${esc(c.gorsel)}" alt="${esc(t(c.baslik))}" loading="lazy"><span>${esc(L.viewCert)}</span></a></li>`).join("")}</ul>` : ""}
             ${S.cvLinki ? `<p style="margin-top:28px"><a class="red" href="${esc(S.cvLinki)}" download>${esc(L.cv)} ↓</a></p>` : ""}
           </div>
         </section>

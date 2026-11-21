@@ -256,6 +256,13 @@ const SITE = {
   // ---- Sertifikalar (Deneyim bölümünde, Eğitim'in altında) ----
   sertifikalar: [
     {
+      tarih: { tr: "Kasım 2026", en: "November 2026" },
+      baslik: { tr: "Sıfırdan İleri Seviyeye Şantiye Eğitimi (Temelden Çatıya)", en: "Construction Site Training, Beginner to Advanced (Foundation to Roof)" },
+      kurum: { tr: "Udemy · 7 saat", en: "Udemy · 7 hours" },
+      gorsel: "assets/sertifika/santiye-egitimi.jpg",
+      link: "https://ude.my/UC-a312721d-4d64-47f1-9734-2f7271afc663",
+    },
+    {
       tarih: { tr: "Şubat 2024", en: "February 2024" },
       baslik: { tr: "Tasarım Odaklı Düşünme Eğitimi", en: "Design Thinking Training" },
       kurum: { tr: "Çiğdem Sezer Akademi · İkon Proje Mimarlık ekibi için", en: "Çiğdem Sezer Academy · for the İkon Proje architecture team" },
