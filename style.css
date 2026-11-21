@@ -241,6 +241,11 @@ html.cur-out .cur-dot, html.cur-out .cur-ring { opacity: 0; }
 }
 .work-img img { transition: transform 0.8s cubic-bezier(.2,.7,.2,1); }
 .work:hover .work-img img { transform: scale(1.03); }
+/* Yapay zekâ önizlemeleri: profil fotoğrafı gibi siyah-beyaz, üstüne gelince renkli */
+@media (hover: hover) {
+  .ai-works .work-img img { filter: grayscale(1) contrast(1.05); transition: filter 0.6s, transform 0.8s cubic-bezier(.2,.7,.2,1); }
+  .ai-works .work:hover .work-img img, .ai-works .work:focus-visible .work-img img { filter: none; }
+}
 .work-cap { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding-top: 12px; align-items: baseline; }
 .work-cap .no { color: var(--red); font-size: 12.5px; }
 .work-cap h3 { font-weight: 500; font-size: 15px; }
