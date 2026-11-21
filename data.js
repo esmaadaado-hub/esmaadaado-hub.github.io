@@ -117,6 +117,41 @@ const SITE = {
       link: "",
     },
     {
+      baslik: { tr: "Aurel — Yapım Turu", en: "Aurel — Construction Tour" },
+      arac: "Claude",
+      aciklama: {
+        tr: "Aurel villasının çizim setinden kurulan 3D aksonometrik diyagram. Kaydırdıkça katlar kat kat yükseliyor, ayrılıp mahallerini gösteriyor; ardından gün ışığı sabahtan geceye dönüyor ve kesitlerde iç mekân yerleşimi açılıyor.",
+        en: "A 3D axonometric diagram built from Aurel villa's drawing set. As you scroll, the floors rise one by one, separate to reveal their rooms, then daylight moves from morning to night and cut-away views open up the interior layout.",
+      },
+      gorsel: "assets/ai/aurel-yapim-turu.jpg",
+      onizleme: "ai/aurel-yapim-turu.html",
+      etkilesimli: true,
+      link: "",
+    },
+    {
+      baslik: { tr: "Aurel — Diyagram Videosu", en: "Aurel — Diagram Film" },
+      arac: "Claude",
+      aciklama: {
+        tr: "Aynı villanın 53 saniyelik mimari diyagram filmi: katların oluşumu, mahaller ve alanları, gün boyunca güneş ve gölge, kesitlerde mobilya yerleşimi. Sosyal medya için 4:5 formatında.",
+        en: "A 53-second architectural diagram film of the same villa: floors assembling, rooms and their areas, sun and shadow through the day, and furniture layouts in section. Made in 4:5 for social media.",
+      },
+      gorsel: "assets/ai/aurel-diyagram.jpg",
+      onizleme: "ai/aurel-diyagram.html",
+      link: "",
+    },
+    {
+      baslik: { tr: "Şantiye Eskiz Stüdyosu", en: "Site Sketch Studio" },
+      arac: "Claude",
+      aciklama: {
+        tr: "Şantiye fotoğrafının üstüne aynı açıdaki render'ı el çizimi gibi beyaz çizgilerle bindiren araç. Çizgiler render'dan otomatik çıkarılıyor; hizalama, silgi, el yazısı notlar ve oklarla paylaşıma hazır görsel üretiyor.",
+        en: "A tool that overlays a render onto a construction-site photo taken from the same angle, as white hand-drawn-style lines. Lines are extracted from the render automatically; alignment, an eraser, handwritten notes and arrows turn it into a share-ready image.",
+      },
+      gorsel: "assets/ai/santiye-eskiz.jpg",
+      onizleme: "ai/santiye-eskiz.html",
+      etkilesimli: true,
+      link: "",
+    },
+    {
       baslik: { tr: "Bu portfolyo sitesi", en: "This portfolio website" },
       arac: "Claude Code",
       aciklama: {
