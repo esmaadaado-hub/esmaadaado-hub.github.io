@@ -170,13 +170,38 @@ input[type=range]{width:100%;accent-color:var(--red)}
   .preview-col{position:static;order:-1;margin-bottom:40px}
   .work{display:flex;flex-direction:column}
 }
+#media [data-drag].selected{outline:6px solid #a3201b;outline-offset:6px}
+.bar .who .st{color:var(--muted);font-weight:400;margin-left:12px;font-size:12px}
+.sizer{width:100%;max-width:360px;display:grid;gap:6px}
+.sizer label{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--muted)}
+.sizer label span{flex:none;width:84px}
+.sizer label b{flex:none;width:42px;text-align:right;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.mob{display:none}
+@media (max-width:760px){
+  input[type=text],textarea{font-size:16px}
+  input[type=range]{height:30px}
+  .hero{padding-top:28px;padding-bottom:20px}
+  .hero h1{font-size:clamp(2.6rem,13vw,4rem)}
+  .hero .meta,.foot,.bar .who .st{display:none}
+  .mob{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);border-top:1px solid var(--ink);
+    padding:0 max(16px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(16px, env(safe-area-inset-left, 0px))}
+  .mob button{flex:1;font:inherit;font-size:14px;background:none;border:0;padding:16px 0;color:var(--muted);cursor:pointer}
+  .mob button[aria-pressed="true"]{color:var(--ink);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px;text-decoration-thickness:1.5px}
+  body[data-view="edit"] .preview-col{display:none}
+  body[data-view="preview"] .controls,body[data-view="preview"] .hero{display:none}
+  body[data-view="preview"] .preview-col{padding-top:20px}
+  .work{padding-bottom:120px}
+  .preview-col{margin-bottom:0}
+  .tpls{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 12px}
+  .sizer label span{width:76px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
 </style>
 
 <div class="bg-grid grid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
 <header class="bar grid">
-  <div class="who">Paylaşım Masası</div>
+  <div class="who">Paylaşım Masası<span class="st" id="sync"></span></div>
   <nav aria-label="Bölümler">
     <a href="#s-sablon"><span>01</span>Şablon</a>
     <a href="#s-foto"><span>02</span>Fotoğraf</a>
@@ -261,9 +286,18 @@ input[type=range]{width:100%;accent-color:var(--red)}
       <label class="chk" id="safe-wrap" hidden><input type="checkbox" id="safe" checked> Güvenli alan</label>
       <button class="btn solid" id="export" type="button">PNG olarak al</button>
     </div>
+    <div class="sizer">
+      <label for="gsize"><span>Tüm öğeler</span><input type="range" id="gsize" min="40" max="160" value="100"><b id="gsize-v">100%</b></label>
+      <label for="osize" id="osize-wrap" hidden><span>Seçili öğe</span><input type="range" id="osize" min="30" max="200" value="100"><b id="osize-v">100%</b></label>
+    </div>
     <p class="hint" id="hint"></p>
   </aside>
 </div>
+
+<nav class="mob" aria-label="Görünüm">
+  <button id="v-edit" data-v="edit" aria-pressed="true">Düzenle</button>
+  <button id="v-prev" data-v="preview" aria-pressed="false">Önizle</button>
+</nav>
 
 <footer class="foot grid"><p>Paylaşım Masası</p><span>Instagram önizleme aracı</span></footer>
 
@@ -272,8 +306,8 @@ input[type=range]{width:100%;accent-color:var(--red)}
   <div class="box" role="dialog" aria-label="Dışa aktarılan görsel">
     <strong id="m-title" style="font-weight:500">Görsel hazır</strong>
     <img id="m-img" alt="Dışa aktarılan paylaşım görseli">
-    <p>Görsele sağ tıklayıp “Resmi farklı kaydet” ile (telefonda basılı tutarak) kaydedebilirsin.</p>
-    <div><button class="btn" id="m-close" type="button">Kapat</button></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn solid" id="m-save" type="button" style="flex:1">Telefona / bilgisayara kaydet</button><button class="btn" id="m-close" type="button">Kapat</button></div>
+    <p id="m-note">Kaydet'e dokun, çıkan pencerede onayla. Telefonda paylaşım menüsü açılırsa “Resmi Kaydet”i seç.</p>
   </div>
 </div>
 
@@ -600,8 +634,9 @@ const safeFor = mode => mode === "story" ? { t: 250, b: 340 } : { t: 0, b: 0 };
 
 function buildStage(tplId, mode, W, H){
   const tp = tplById(tplId), td = T(tplId), off = td.off[mode] || (td.off[mode] = {});
-  const D = (key, pos, inner) => { const o = off[key] || { x: 0, y: 0 };
-    return `<div data-drag="${key}" style="position:absolute;${pos};transform:translate(${o.x}px,${o.y}px)">${inner}</div>`; };
+  const gs = td.gs || 1;
+  const D = (key, pos, inner) => { const o = off[key] || { x: 0, y: 0 }, sc = +(gs * (o.s || 1)).toFixed(3);
+    return `<div data-drag="${key}" data-sc="${sc}" style="position:absolute;${pos};transform:translate(${o.x}px,${o.y}px) scale(${sc});transform-origin:50% 50%">${inner}</div>`; };
   const img = imgLayer();
   const d = { img, D, raw: td, eyebrow: esc(td.eyebrow), title: br(td.title), body: br(td.body), footer: esc(td.footer),
     bg: td.bg || "#ffffff", fg: td.fg || "#111111", ac: td.ac || "#111111", user: esc(state.user) };
@@ -652,6 +687,11 @@ function render(){
     media.insertAdjacentHTML("beforeend", `<div class="safe t" style="top:0;height:${s.t * K}px"><span>Profil satırı</span></div><div class="safe b" style="bottom:0;height:${s.b * K}px"><span>Mesaj kutusu</span></div>`);
   }
   media.addEventListener("pointerdown", startDrag);
+  const td = T(), selEl = state.sel ? media.querySelector(`[data-drag="${state.sel}"]`) : null;
+  if (selEl) selEl.classList.add("selected");
+  $("osize-wrap").hidden = !selEl;
+  $("gsize").value = Math.round((td.gs || 1) * 100); $("gsize-v").textContent = $("gsize").value + "%";
+  if (selEl){ const o = td.off[state.mode][state.sel] || {}; $("osize").value = Math.round((o.s || 1) * 100); $("osize-v").textContent = $("osize").value + "%"; }
   const more = $("more"); if (more) more.onclick = () => { state.capOpen = true; render(); };
 
   const tags = (state.caption.match(/#[\p{L}\p{N}_]+/gu) || []).length, len = [...state.caption].length;
@@ -664,14 +704,17 @@ function render(){
 
 /* Sürükleme: önizlemedeki öğeyi tut, bırakınca konumu şablona kaydet */
 function startDrag(e){
-  const el = e.target.closest("[data-drag]"); if (!el) return;
+  const el = e.target.closest("[data-drag]");
+  if (!el){ if (state.sel){ state.sel = null; render(); } return; }
   e.preventDefault();
-  const key = el.dataset.drag, off = T().off[state.mode], base = off[key] || { x: 0, y: 0 };
-  const sx = e.clientX, sy = e.clientY; let x = base.x, y = base.y;
-  el.classList.add("dragging"); el.setPointerCapture(e.pointerId);
-  const move = ev => { x = base.x + (ev.clientX - sx) / K; y = base.y + (ev.clientY - sy) / K; el.style.transform = `translate(${x}px,${y}px)`; };
+  const key = el.dataset.drag, off = T().off[state.mode], base = off[key] || { x: 0, y: 0 }, sc = el.dataset.sc || 1;
+  const sx = e.clientX, sy = e.clientY; let x = base.x || 0, y = base.y || 0, moved = false;
+  el.classList.add("dragging", "selected"); el.setPointerCapture(e.pointerId);
+  const move = ev => { if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) > 3) moved = true;
+    x = (base.x || 0) + (ev.clientX - sx) / K; y = (base.y || 0) + (ev.clientY - sy) / K; el.style.transform = `translate(${x}px,${y}px) scale(${sc})`; };
   const up = () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up);
-    off[key] = { x: Math.round(x), y: Math.round(y) }; render(); thumbsSoon(); };
+    if (moved) off[key] = { ...(off[key] || {}), x: Math.round(x), y: Math.round(y) };
+    state.sel = key; render(); if (moved) thumbsSoon(); };
   el.addEventListener("pointermove", move); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
 }
 
@@ -687,7 +730,7 @@ function renderThumbs(){
     const th = b.querySelector(".thumb"), inner = document.createElement("div");
     inner.appendChild(buildStage(t.id, state.mode, W, H)); th.appendChild(inner);
     requestAnimationFrame(() => { inner.style.transform = `scale(${th.clientWidth / W})`; });
-    b.onclick = () => { state.tpl = t.id; renderFields(); renderThumbs(); render(); };
+    b.onclick = () => { state.tpl = t.id; state.sel = null; renderFields(); renderThumbs(); render(); };
   });
 }
 let thumbTimer; const thumbsSoon = () => { clearTimeout(thumbTimer); thumbTimer = setTimeout(renderThumbs, 250); };
@@ -714,14 +757,61 @@ function renderFields(){
   });
 }
 
-/* ============================ Taslak kaydı ============================ */
-const KEY = "paylasim-masasi-v2";
+/* ============================ Kayıt: bulut (db + assets), yedek olarak bu tarayıcı ============================ */
+const KEY = "paylasim-masasi-portfolyo";
+const Cloud = { ref: null, assets: null, dl: null, timer: null, last: "", ready: false };
+const clone = o => JSON.parse(JSON.stringify(o));
+const stable = v => Array.isArray(v) ? "[" + v.map(stable).join(",") + "]"
+  : v && typeof v === "object" ? "{" + Object.keys(v).sort().map(k => JSON.stringify(k) + ":" + stable(v[k])).join(",") + "}" : JSON.stringify(v ?? null);
+const snap = () => ({ ...state, capOpen: false, sel: null });
+function cloudBody(){ const o = clone(snap()); ["img", "av"].forEach(k => { if (o[k] && o[k].startsWith("data:")) o[k] = null; }); return o; }
+const setSync = t => { const el = $("sync"); if (el) el.textContent = t; };
 function save(){
-  try { localStorage.setItem(KEY, JSON.stringify({ ...state, capOpen: false })); }
-  catch (e){ try { localStorage.setItem(KEY, JSON.stringify({ ...state, img: null, av: null, capOpen: false })); } catch (_){} }
+  try { localStorage.setItem(KEY, JSON.stringify(snap())); }
+  catch (e){ try { localStorage.setItem(KEY, JSON.stringify({ ...snap(), img: null, av: null })); } catch (_){} }
+  if (!Cloud.ref || !Cloud.ready) return;
+  clearTimeout(Cloud.timer);
+  Cloud.timer = setTimeout(async () => {
+    const body = cloudBody(), js = stable(body);
+    if (js === Cloud.last){ Cloud.timer = null; return; }
+    setSync("Kaydediliyor…");
+    try { await Cloud.ref.set(body); Cloud.last = js; setSync("Buluta kaydedildi"); }
+    catch (e){ setSync(e && e.code === "permission_denied" ? "Sadece görüntüleme" : "Kaydedilemedi"); }
+    Cloud.timer = null;
+  }, 900);
+}
+async function initCloud(){ setSync("Bu tarayıcıda kayıtlı"); return;
+  let db = null;
+  try { if (window.claude && claude.use) [db, Cloud.assets, Cloud.dl] = await Promise.all([claude.use("db"), claude.use("assets"), claude.use("downloads")]); } catch (e){}
+  if (!db){ setSync("Bu tarayıcıda kayıtlı"); return; }
+  Cloud.ref = db.doc("masa/durum"); setSync("Buluta bağlanıyor…");
+  const t = setTimeout(() => { if (!Cloud.ready) setSync("Buluta ulaşılamadı"); }, 10000);
+  Cloud.ref.onSnapshot(s => {
+    clearTimeout(t);
+    const first = !Cloud.ready; Cloud.ready = true;
+    if (!s.exists){ if (first) save(); setSync("Buluta kaydedildi"); return; }
+    const data = s.data(), js = stable(data);
+    if (js === Cloud.last || Cloud.timer){ setSync("Buluta kaydedildi"); return; }
+    Cloud.last = js;
+    const localImg = state.img, localAv = state.av;
+    Object.assign(state, clone(data), { capOpen: false, sel: null });
+    if (!state.img && localImg && localImg.startsWith("data:")) state.img = localImg;
+    if (!state.av && localAv && localAv.startsWith("data:")) state.av = localAv;
+    if (!TEMPLATES.some(x => x.id === state.tpl)) state.tpl = TEMPLATES[0].id;
+    syncInputs(); renderFields(); renderThumbs(); render();
+    setSync("Buluta kaydedildi");
+  }, () => { clearTimeout(t); setSync("Bulut bağlantısı koptu, sayfayı yenile"); });
+}
+async function imageSrc(file, dataUrl){
+  if (Cloud.assets){ try { const r = await Cloud.assets.upload(file); return "/_blob/" + r.id; } catch (e){} }
+  return dataUrl;
 }
 function load(){ try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) Object.assign(state, s); } catch (e){} if (!TEMPLATES.some(t => t.id === state.tpl)) state.tpl = TEMPLATES[0].id; }
+Object.assign(state, {"av":null,"capOpen":false,"caption":"Bu haftanın küçük listesi 🤍\n\nYarısını bitirdim, yarısı hâlâ bekliyor. Sizin bu hafta listenizde ne var? Yorumlara yazın, belki birbirimize ilham oluruz.\n\n#gününbiri #yapılacaklar #içerikplanı","img":"../assets/ai/paylasim-foto.jpg","loc":"İstanbul","mode":"story","px":50,"py":50,"ratio":"4:5","sel":null,"showSafe":true,"t":{"album":{"ac":"#f1e27a","bg":"#f2f2f2","body":"sabah yürüyüşü","eyebrow":"04. albüm adı","fg":"#111111","footer":"Vazgeç|Kaydet","off":{"post":{},"story":{}},"title":"Albümü Yeniden Adlandır"},"baloncuk":{"bg":"#6f6f6f","body":"sosyal hayat\nhediye telaşı\nkahve molası\nyıl sonu işleri\natıştırmalık\nson dakika işleri\ndekor görevi","eyebrow":"","fg":"#ffffff","footer":"","off":{"post":{},"story":{"b3":{"x":7,"y":27},"b6":{"x":-68,"y":51}}},"title":""},"etiket":{"ac":"#f1e27a","bg":"#c9a47c","body":"","eyebrow":"05. kağıt etiket","fg":"#2b2018","footer":"","off":{"post":{},"story":{}},"title":"alışveriş\ngünü"},"kapak":{"ac":"#ffffff","body":"NE PAYLAŞACAĞINI BİLMEDİĞİN GÜNLER İÇİN","eyebrow":"","fg":"#ffffff","footer":"","off":{"post":{},"story":{}},"title":"beş içerik\n*fikri*"},"kelimeler":{"ac":"#1c1c1e","bg":"#ffffff","body":"","eyebrow":"İstanbul","fg":"#fbfcc4","footer":"içerik üreticisi","off":{"post":{},"story":{}},"title":"bir\ngünüm\nnasıl\ngeçiyor"},"liste":{"ac":"#e0a516","bg":"#ffffff","body":"*Marka çekimi\n*Spor\nFaturaları gönder\nMaillere dön\nYemek yap\nVlog paylaş","eyebrow":"şehirde koşturmaca!","fg":"#1c1c1e","footer":"","gs":0.65,"off":{"post":{},"story":{"kart":{"x":-86,"y":-439},"not":{"x":-11,"y":143}}},"title":"Yapılacaklar"},"mesaj":{"ac":"#f1e27a","bg":"#ececec","body":"","eyebrow":"03. mesaj","fg":"#111111","footer":"❤️","off":{"post":{},"story":{}},"title":"kahve molası"},"notlar":{"ac":"#d9aa00","bg":"#fbfaf6","body":"VEE... 👀\nSen de böyleysen... 🙃","eyebrow":"@kendi.hesabin","fg":"#1f7aff","footer":"Notlar","off":{"post":{},"story":{}},"title":"...tükenmeden düzenli paylaşmak istiyorum."},"polaroid":{"ac":"#ffffff","bg":"#a9c0d6","body":"Sosyal medyayı birlikte kolaylaştıralım.\nKöşeme hoş geldin!","eyebrow":"merhaba, ben elif","fg":"#7a2131","footer":"","off":{"post":{},"story":{}},"title":"Benimle\ntanış"},"secim":{"ac":"#2f6bff","bg":"#cfe0f5","body":"Kes|Kopyala|Yapıştır|Bağlantı Ekle","eyebrow":"1/6","fg":"#333333","footer":"Itsss okeyyy","gs":0.7,"off":{"post":{},"story":{"dusunce":{"x":-55,"y":-407},"not":{"x":-39,"y":74},"secim":{"x":-174,"y":-384}}},"title":"Some designer problems "},"takvim":{"ac":"#3a3a32","bg":"#f6ec9e","body":"Tam zamanlı iş sahibi,\nyarı zamanlı\niçerik üreticisi","eyebrow":"@KENDI.HESABIN","fg":"#6b3a1f","footer":"17, 18, 24, 25","off":{"post":{},"story":{}},"title":"ağustosta\nneler\nyaptım"},"uyari":{"ac":"#3aa6e8","bg":"#ffffff","body":"Takipçi sayısı 2026'nın\nen zayıf ölçütü.","eyebrow":"","fg":"#111111","footer":"Katılıyorum|Katılmıyorum","off":{"post":{},"story":{}},"title":"Cesur Fikir"}},"tpl":"liste","user":"kendi.hesabin","zoom":100});
 load();
+/* Portfolyo önizlemesi: örnek fotoğrafla açılır, dokunana kadar şablonları gezer */
+(function(){let stop=false;const end=()=>{stop=true};["pointerdown","keydown","wheel"].forEach(t=>addEventListener(t,end,{once:true,passive:true}));
+ let i=0;(function next(){setTimeout(()=>{if(stop)return;const b=[...document.querySelectorAll(".tpl")];if(b.length){i=(i+1)%Math.min(b.length,8);b[i].click();}next();},3000)})();})();
 
 /* ============================ Kontroller ============================ */
 function syncInputs(){
@@ -738,18 +828,31 @@ function syncInputs(){
 ["user", "loc", "caption"].forEach(f => $(f).addEventListener("input", e => { state[f] = e.target.value; if (f === "caption") state.capOpen = false; render(); if (f === "user") thumbsSoon(); }));
 ["zoom", "px", "py"].forEach(r => $(r).addEventListener("input", e => { state[r] = +e.target.value; render(); thumbsSoon(); }));
 $("safe").addEventListener("change", e => { state.showSafe = e.target.checked; render(); });
-document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { state.mode = b.dataset.mode; syncInputs(); renderThumbs(); render(); });
+document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { state.mode = b.dataset.mode; state.sel = null; syncInputs(); renderThumbs(); render(); });
 document.querySelectorAll("[data-ratio]").forEach(b => b.onclick = () => { state.ratio = b.dataset.ratio; syncInputs(); renderThumbs(); render(); });
-$("reset-pos").onclick = () => { T().off[state.mode] = {}; render(); thumbsSoon(); };
+$("reset-pos").onclick = () => { T().off[state.mode] = {}; T().gs = 1; state.sel = null; render(); thumbsSoon(); };
+$("gsize").addEventListener("input", e => { T().gs = +e.target.value / 100; render(); thumbsSoon(); });
+$("osize").addEventListener("input", e => { if (!state.sel) return; const off = T().off[state.mode];
+  off[state.sel] = { ...(off[state.sel] || { x: 0, y: 0 }), s: +e.target.value / 100 }; render(); thumbsSoon(); });
+
+/* Telefonda Düzenle / Önizle geçişi */
+function setView(v){ document.body.dataset.view = v;
+  document.querySelectorAll(".mob button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+  window.scrollTo(0, 0); if (v === "preview") render(); }
+document.querySelectorAll(".mob button").forEach(b => b.onclick = () => setView(b.dataset.v));
+document.body.dataset.view = "edit";
 
 function readFile(input, cb){
   input.addEventListener("change", () => { const f = input.files[0]; if (!f) return;
-    const r = new FileReader(); r.onload = () => cb(r.result, f.name); r.readAsDataURL(f); input.value = ""; });
+    const r = new FileReader(); r.onload = () => cb(f, r.result); r.readAsDataURL(f); input.value = ""; });
 }
 $("img-btn").onclick = () => $("img").click();
 $("av-btn").onclick = () => $("av").click();
-readFile($("img"), (url, name) => { state.img = url; state.zoom = 100; state.px = 50; state.py = 50; syncInputs(); $("img-name").textContent = name; render(); renderThumbs(); });
-readFile($("av"), url => { state.av = url; render(); });
+readFile($("img"), async (f, dataUrl) => {
+  $("img-name").textContent = "Yükleniyor…";
+  state.img = await imageSrc(f, dataUrl); state.zoom = 100; state.px = 50; state.py = 50;
+  syncInputs(); $("img-name").textContent = f.name; render(); renderThumbs(); });
+readFile($("av"), async (f, dataUrl) => { state.av = await imageSrc(f, dataUrl); render(); });
 
 /* ============================ PNG ============================ */
 $("export").onclick = async () => {
@@ -762,6 +865,27 @@ $("export").onclick = async () => {
     off.innerHTML = "";
     const url = canvas.toDataURL("image/png");
     $("m-img").src = url; $("m-title").textContent = `Görsel hazır · ${W}×${H}`; $("modal").hidden = false;
+    const fname = `${state.mode === "story" ? "story" : "gonderi"}-${state.tpl}.png`;
+    const note = $("m-note"), sv = $("m-save");
+    const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
+    if (!Cloud.dl){
+      sv.hidden = true;
+      note.textContent = "Bu görünümde doğrudan kaydetme kapalı. Görsele basılı tut ya da sağ tıkla, “Resmi Kaydet”i seç. Olmazsa sayfayı claude.ai'de tarayıcıdan aç.";
+    } else {
+      sv.hidden = false; sv.disabled = false;
+      note.textContent = "Kaydet'e dokun, çıkan pencerede onayla. Telefonda paylaşım menüsü açılırsa “Resmi Kaydet”i seç.";
+      sv.onclick = async () => {
+        sv.disabled = true; note.textContent = "Kaydetme penceresi açılıyor…";
+        try { await Cloud.dl.save({ filename: fname, data: blob }); note.textContent = "Kaydedildi."; }
+        catch (e){
+          const c = e && e.code;
+          note.textContent = c === "declined" ? "Kaydetme iptal edildi. Tekrar denemek için butona dokun."
+            : c === "rate_limited" ? "Açık bir kaydetme penceresi var. Onu kapatıp tekrar dene."
+            : "Bu görünümde kaydedilemedi. Görsele basılı tutup “Resmi Kaydet”i dene ya da sayfayı tarayıcıda aç.";
+        }
+        sv.disabled = false;
+      };
+    }
   } catch (e){ $("hint").textContent = "Görsel oluşturulamadı. Sayfayı yenileyip tekrar dene."; }
   finally { btn.disabled = false; btn.textContent = "PNG olarak al"; }
 };
@@ -770,6 +894,7 @@ $("modal").addEventListener("click", e => { if (e.target.id === "modal") $("moda
 document.addEventListener("keydown", e => { if (e.key === "Escape") $("modal").hidden = true; });
 
 syncInputs(); renderFields(); renderThumbs(); render();
+initCloud();
 let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { render(); renderThumbs(); }, 120); });
 if (document.fonts) document.fonts.ready.then(() => { render(); renderThumbs(); });
 </script>

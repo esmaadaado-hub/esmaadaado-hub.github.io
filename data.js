@@ -71,7 +71,7 @@ const SITE = {
   // onizleme: tıklanınca kendi kendine oynayan, etkileşimi kapalı canlı önizleme
   aiIsler: [
     {
-      baslik: { tr: "Villa Yapım Turu", en: "Villa Construction Tour" },
+      baslik: { tr: "3D Yapım Turu", en: "3D Construction Tour" },
       arac: "Claude",
       aciklama: {
         tr: "Bir villanın arsadan salona yedi aşamada inşa edilişini gösteren, kaydırmayla ilerleyen etkileşimli 3D anlatım arayüzü.",
@@ -82,7 +82,7 @@ const SITE = {
       link: "",
     },
     {
-      baslik: { tr: "Paylaşım Masası", en: "Social Post Studio" },
+      baslik: { tr: "Sosyal Medya Şablonları", en: "Social Media Templates" },
       arac: "Claude",
       aciklama: {
         tr: "Instagram gönderi ve story tasarımlarını, paylaşmadan önce akışta nasıl görüneceğiyle birlikte hazırlayan bir araç. 12 şablon, sürüklenebilir yazılar ve PNG dışa aktarma.",
@@ -90,10 +90,11 @@ const SITE = {
       },
       gorsel: "assets/ai/paylasim-masasi.jpg",
       onizleme: "ai/paylasim-masasi.html",
+      etkilesimli: true,
       link: "",
     },
     {
-      baslik: { tr: "Sunum Altlığı", en: "Presentation Layout Tool" },
+      baslik: { tr: "Sunum Paftası Aracı", en: "Presentation Board Tool" },
       arac: "Claude",
       aciklama: {
         tr: "Plan, analiz ve render görsellerini sürükle-bırak ile sunum paftalarına dizen arayüz. Sunumlar otomatik kaydedilir, PNG ya da tek PDF olarak dışa aktarılır.",
@@ -105,7 +106,7 @@ const SITE = {
       link: "",
     },
     {
-      baslik: { tr: "Moodboard Stüdyosu", en: "Moodboard Studio" },
+      baslik: { tr: "Malzeme Panosu", en: "Material Board" },
       arac: "Claude",
       aciklama: {
         tr: "Bir renderdan malzeme ve renk paletini çıkarıp kolaj, malzeme panosu ve konsept panosu hazırlayan stüdyo. Panolar PDF olarak indirilebiliyor.",
@@ -117,7 +118,7 @@ const SITE = {
       link: "",
     },
     {
-      baslik: { tr: "Aurel — Yapım Turu", en: "Aurel — Construction Tour" },
+      baslik: { tr: "Kat Kat Villa Diyagramı", en: "Floor-by-Floor Villa Diagram" },
       arac: "Claude",
       aciklama: {
         tr: "Aurel villasının çizim setinden kurulan 3D aksonometrik diyagram. Kaydırdıkça katlar kat kat yükseliyor, ayrılıp mahallerini gösteriyor; ardından gün ışığı sabahtan geceye dönüyor ve kesitlerde iç mekân yerleşimi açılıyor.",
@@ -129,7 +130,7 @@ const SITE = {
       link: "",
     },
     {
-      baslik: { tr: "Şantiye Eskiz Stüdyosu", en: "Site Sketch Studio" },
+      baslik: { tr: "Şantiye Eskizi", en: "Site Sketch Overlay" },
       arac: "Claude",
       aciklama: {
         tr: "Şantiye fotoğrafının üstüne aynı açıdaki render'ı el çizimi gibi beyaz çizgilerle bindiren araç. Çizgiler render'dan otomatik çıkarılıyor; hizalama, silgi, el yazısı notlar ve oklarla paylaşıma hazır görsel üretiyor.",
@@ -141,7 +142,7 @@ const SITE = {
       link: "",
     },
     {
-      baslik: { tr: "Bu portfolyo sitesi", en: "This portfolio website" },
+      baslik: { tr: "Portfolyo Sitesi", en: "Portfolio Website" },
       arac: "Claude Code",
       aciklama: {
         tr: "Tasarımdan iki dilli içeriğe kadar bu siteyi yapay zekâ ile birlikte kodladım.",
