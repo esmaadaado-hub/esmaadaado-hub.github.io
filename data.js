@@ -106,17 +106,6 @@ const SITE = {
   // onizleme: tıklanınca kendi kendine oynayan, etkileşimi kapalı canlı önizleme
   aiIsler: [
     {
-      baslik: { tr: "3D Yapım Turu", en: "3D Construction Tour" },
-      arac: "Claude",
-      aciklama: {
-        tr: "Bir villanın arsadan salona yedi aşamada inşa edilişini gösteren, kaydırmayla ilerleyen etkileşimli 3D anlatım arayüzü.",
-        en: "An interactive, scroll-driven 3D storytelling interface showing a villa being built in seven stages, from empty plot to living room.",
-      },
-      gorsel: "assets/ai/villa-yapim-turu.jpg",
-      onizleme: "ai/villa-yapim-turu.html",
-      link: "",
-    },
-    {
       baslik: { tr: "Sosyal Medya Şablonları", en: "Social Media Templates" },
       arac: "Claude",
       aciklama: {
@@ -174,6 +163,17 @@ const SITE = {
       gorsel: "assets/ai/santiye-eskiz.jpg",
       onizleme: "ai/santiye-eskiz.html",
       etkilesimli: true,
+      link: "",
+    },
+    {
+      baslik: { tr: "3D Yapım Turu", en: "3D Construction Tour" },
+      arac: "Claude",
+      aciklama: {
+        tr: "Bir villanın arsadan salona yedi aşamada inşa edilişini gösteren, kaydırmayla ilerleyen etkileşimli 3D anlatım arayüzü.",
+        en: "An interactive, scroll-driven 3D storytelling interface showing a villa being built in seven stages, from empty plot to living room.",
+      },
+      gorsel: "assets/ai/villa-yapim-turu.jpg",
+      onizleme: "ai/villa-yapim-turu.html",
       link: "",
     },
     {
