@@ -271,7 +271,7 @@ const SITE = {
   ],
   egitim: [
     {
-      tarih: "2020 — 2025",
+      tarih: "2020 — 2024",
       baslik: { tr: "Mimarlık Lisans", en: "B.Arch, Architecture" },
       yer: { tr: "Erciyes Üniversitesi, Mimarlık Fakültesi", en: "Erciyes University, Faculty of Architecture" },
     },
