@@ -364,7 +364,7 @@ const SITE = {
       gorsel: "assets/proje2/04.jpg",
       gorseller: ["assets/proje2/04.jpg", "assets/proje2/01.jpg", "assets/proje2/02.jpg", "assets/proje2/03.jpg", "assets/proje2/05.jpg", "assets/proje2/06.jpg", "assets/proje2/07.jpg"],
       dosyalar: [
-        { ad: { tr: "M1–M2 blokları (DWG · 32 MB)", en: "M1–M2 blocks (DWG · 32 MB)" }, link: "assets/dosyalar/eunoia-m1-m2-bloklar.dwg" },
+        { ad: { tr: "M1–M2 blokları (DWG · 32 MB)", en: "M1–M2 blocks (DWG · 32 MB)" }, link: "" },
       ],
       link: "",
     },
@@ -426,7 +426,7 @@ const SITE = {
         en: ["Permit drawings and municipal approvals", "Construction documentation", "Site plan and type-villa drawings", "Process management and coordination"],
       },
       dosyalar: [
-        { ad: { tr: "Tip-B villa projesi (DWG)", en: "Type-B villa drawings (DWG)" }, link: "assets/dosyalar/sylvora-tip-b.dwg" },      ],
+        { ad: { tr: "Tip-B villa projesi (DWG)", en: "Type-B villa drawings (DWG)" }, link: "" },      ],
       link: "",
     },
     {
@@ -486,7 +486,7 @@ const SITE = {
       gorsel: "assets/proje8/01.jpg",
       gorseller: ["assets/proje8/01.jpg", "assets/proje8/02.jpg", "assets/proje8/03.jpg", "assets/proje8/04.jpg"],
       dosyalar: [
-        { ad: { tr: "As-built proje (DWG · 28 MB)", en: "As-built drawings (DWG · 28 MB)" }, link: "assets/dosyalar/vantera-asbuilt.dwg" },
+        { ad: { tr: "As-built proje (DWG · 28 MB)", en: "As-built drawings (DWG · 28 MB)" }, link: "" },
       ],
       link: "",
     },
@@ -504,7 +504,7 @@ const SITE = {
       gorsel: "assets/proje9/01.jpg",
       gorseller: ["assets/proje9/01.jpg", "assets/proje9/02.jpg", "assets/proje9/03.jpg", "assets/proje9/04.jpg", "assets/proje9/05.jpg", "assets/proje9/06.jpg"],
       dosyalar: [
-        { ad: { tr: "3D model (SKP · 17 MB)", en: "3D model (SKP · 17 MB)" }, link: "assets/dosyalar/azurea-model.skp" },
+        { ad: { tr: "3D model (SKP · 17 MB)", en: "3D model (SKP · 17 MB)" }, link: "" },
       ],
       link: "",
     },

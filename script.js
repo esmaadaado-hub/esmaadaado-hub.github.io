@@ -444,3 +444,7 @@
   render();
   setupCursor();
 })();
+
+// Görsellerin sağ tık / sürükle ile kaydedilmesini engelle
+document.addEventListener("contextmenu", (e) => { if (e.target.closest("img, picture, video, canvas, .work, .thumb")) e.preventDefault(); });
+document.addEventListener("dragstart", (e) => { if (e.target.closest("img, video")) e.preventDefault(); });
