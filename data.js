@@ -245,11 +245,11 @@ const SITE = {
     },
     {
       tarih: "2025 — 2026",
-      baslik: { tr: "İç Mimari Proje ve Ürün Tedariki (Uzaktan)", en: "Interior Design & Product Procurement (Remote)" },
-      yer: { tr: "Riviera Hotel, Dubai · Özel proje", en: "Riviera Hotel, Dubai · Private commission" },
+      baslik: { tr: "İç Mimari Proje Koordinasyonu (Uzaktan)", en: "Interior Design Project Coordination (Remote)" },
+      yer: { tr: "Riviera Hotel, Dubai · Freelance", en: "Riviera Hotel, Dubai · Freelance" },
       aciklama: {
-        tr: "Dubai'deki Riviera Hotel için uzaktan yürütülen özel bir işte iç mimari projede ve ürün tedarik sürecinde görev aldım.",
-        en: "Worked remotely on a private commission for the Riviera Hotel in Dubai, contributing to the interior design project and product procurement.",
+        tr: "Dubai'deki Riviera Hotel için uzaktan yürüttüğüm freelance bir işte iç mimari projede ve ürün tedarik sürecinde görev aldım.",
+        en: "Worked remotely as a freelancer for the Riviera Hotel in Dubai, contributing to the interior design project and product procurement.",
       },
     },
     {
