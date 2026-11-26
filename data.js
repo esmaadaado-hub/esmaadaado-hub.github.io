@@ -219,8 +219,8 @@ const SITE = {
     },
   ],
   diller: {
-    tr: ["Türkçe", "İngilizce", "Arapça"],
-    en: ["Turkish", "English", "Arabic"],
+    tr: ["Türkçe (ana dil)", "Arapça (ana dil)", "İngilizce (B2)"],
+    en: ["Turkish (native)", "Arabic (native)", "English (B2)"],
   },
 
   // ---- 02 Deneyim ----
