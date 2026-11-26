@@ -237,19 +237,10 @@ const SITE = {
     {
       tarih: { tr: "Bugün", en: "Present" },
       baslik: { tr: "Serbest Mimar", en: "Freelance Architect" },
-      yer: "Kayseri",
+      yer: { tr: "Kayseri · Uzaktan", en: "Kayseri · Remote" },
       aciklama: {
-        tr: "Konut iç mekân projeleri ve mimari yarışmalar: konsept, 2D/3D çizim, görselleştirme ve müşteri iletişimi.",
-        en: "Residential interiors and architectural competitions: concept, 2D/3D drawings, visualization and client communication.",
-      },
-    },
-    {
-      tarih: "2025 — 2026",
-      baslik: { tr: "İç Mimari Proje Koordinasyonu (Uzaktan)", en: "Interior Design Project Coordination (Remote)" },
-      yer: { tr: "Riviera Hotel, Dubai · Freelance", en: "Riviera Hotel, Dubai · Freelance" },
-      aciklama: {
-        tr: "Dubai'deki Riviera Hotel için uzaktan yürüttüğüm freelance bir işte iç mimari projede ve ürün tedarik sürecinde görev aldım.",
-        en: "Worked remotely as a freelancer for the Riviera Hotel in Dubai, contributing to the interior design project and product procurement.",
+        tr: "Konut iç mekân projeleri ve mimari yarışmalar: konsept, 2D/3D çizim, görselleştirme ve müşteri iletişimi. 2025 — 2026: Riviera Hotel, Dubai için uzaktan iç mimari proje koordinasyonu ve ürün tedariki.",
+        en: "Residential interiors and architectural competitions: concept, 2D/3D drawings, visualization and client communication. 2025 — 2026: remote interior design project coordination and product procurement for the Riviera Hotel, Dubai.",
       },
     },
     {
